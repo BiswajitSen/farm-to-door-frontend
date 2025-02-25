@@ -1,9 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import styles from './Layout.module.css';
+import ImageModal from './ImageModal';
 import urls from "@/.env";
 
 const ProductList = ({ products, cart, onAddOne, onRemoveOne }) => {
+    const [selectedImage, setSelectedImage] = useState(null);
+
+    const handleImageClick = (imageUrl) => {
+        setSelectedImage(imageUrl);
+    };
+
+    const handleCloseModal = () => {
+        setSelectedImage(null);
+    };
+
     const handleAddToCart = (productId) => {
         const productElement = document.getElementById(`product-${productId}`);
         productElement.classList.add(styles.moving);
@@ -25,6 +36,7 @@ const ProductList = ({ products, cart, onAddOne, onRemoveOne }) => {
                         src={`${urls.API_BASE_URL}/images/${product.imageUrl}`}
                         alt={product.name}
                         className={styles.productImage}
+                        onClick={() => handleImageClick(`${urls.API_BASE_URL}/images/${product.imageUrl}`)}
                     />
                     <div className={styles.productDetails}>
                         <div className={styles.productName}>{product.name}</div>
@@ -32,14 +44,16 @@ const ProductList = ({ products, cart, onAddOne, onRemoveOne }) => {
                     </div>
                     {cart[product._id] ? (
                         <div className={styles.buttonGroup}>
-                            <button onClick={() => onAddOne(product._id)} className={styles.addButton}>Add 1</button>
-                            <button onClick={() => onRemoveOne(product._id)} className={styles.removeButton}>Remove 1</button>
+                            <button onClick={() => onAddOne(product._id)} className={styles.addButton}>+</button>
+                            <div className={styles.quantityDisplay}>Selected: {cart[product._id]}</div>
+                            <button onClick={() => onRemoveOne(product._id)} className={styles.removeButton}>-</button>
                         </div>
                     ) : (
                         <button onClick={() => handleAddToCart(product._id)} className={styles.addButton}>Add to Cart</button>
                     )}
                 </div>
             ))}
+            {selectedImage && <ImageModal imageUrl={selectedImage} onClose={handleCloseModal} />}
         </div>
     );
 };

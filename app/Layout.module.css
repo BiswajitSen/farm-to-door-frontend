@@ -195,3 +195,48 @@
 .productItem.moving {
     animation: moveToCart 1s forwards;
 }
+
+.addButton, .removeButton {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.addButton {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.addButton:hover {
+    background-color: #218838;
+    transform: scale(1.05);
+}
+
+.removeButton {
+    background-color: #dc3545;
+    color: #fff;
+    margin-left: 10px;
+}
+
+.removeButton:hover {
+    background-color: #c82333;
+    transform: scale(1.05);
+}
+
+.buttonGroup {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.quantityDisplay {
+    margin-left: 10px;
+    padding: 5px 10px;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    font-size: 1em;
+    color: #333;
+}

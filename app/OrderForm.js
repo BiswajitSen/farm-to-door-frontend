@@ -15,6 +15,9 @@ const OrderForm = ({ address, setAddress, onSubmit, onClose, selectedProducts, c
         onSubmit(orderReq);
     };
 
+    const totalItems = selectedProducts.reduce((acc, product) => acc + cart[product._id], 0);
+    const totalCost = selectedProducts.reduce((acc, product) => acc + cart[product._id] * product.price, 0);
+
     return (
         <div className={styles.modalOverlay}>
             <div className={styles.modal}>
@@ -31,6 +34,10 @@ const OrderForm = ({ address, setAddress, onSubmit, onClose, selectedProducts, c
                         </li>
                     ))}
                 </ul>
+                <div className={styles.totalContainer}>
+                    <p>Total Items: {totalItems}</p>
+                    <p>Total Cost: ${totalCost.toFixed(2)}</p>
+                </div>
                 <form onSubmit={handleSubmit}>
                     <input
                         type="text"
@@ -41,7 +48,7 @@ const OrderForm = ({ address, setAddress, onSubmit, onClose, selectedProducts, c
                     />
                     <button type="submit" className={styles.submitButton}>Submit Order</button>
                 </form>
-                <button onClick={onClose} className={styles.closeButton}>Close</button>
+                <button onClick={onClose} className={styles.closeButton}>X</button>
             </div>
         </div>
     );

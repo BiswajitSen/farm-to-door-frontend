@@ -11,6 +11,12 @@
     z-index: 1000;
 }
 
+.totalContainer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
 .modal {
     background-color: #fff;
     padding: 20px;
@@ -55,10 +61,22 @@
     position: absolute;
     top: 10px;
     right: 10px;
-    background: none;
+    background-color: #ff4d4d;
+    color: #fff;
     border: none;
-    font-size: 1.5em;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 1.2em;
     cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s;
+}
+
+.closeButton:hover {
+    background-color: #ff1a1a;
 }
 
 .cart h2 {
@@ -84,11 +102,12 @@
 }
 
 .input {
-    width: 100%;
+    width: 96%;
     padding: 10px;
     margin-bottom: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
+    font: bold;
 }
 
 .submitButton {
