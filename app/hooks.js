@@ -1,12 +1,13 @@
 import { useEffect } from 'react';
 import axios from 'axios';
 import { useAppContext } from './context';
+import urls from "@/.env";
 
 export const useFetchProducts = () => {
     const { setProducts, setLoading, setError } = useAppContext();
 
     useEffect(() => {
-        axios.get('http://localhost:8080/api/products')
+        axios.get(`${urls.API_BASE_URL}/products`)
             .then(response => {
                 setProducts(response.data);
                 setLoading(false);
@@ -30,7 +31,7 @@ export const useHandleOrderSubmit = () => {
 
         try {
             console.log("DEBUG:" + selectedProducts);
-            const response = await axios.post('http://localhost:8080/api/orders', {
+            const response = await axios.post(`${urls.API_BASE_URL}/orders`, {
                 productIds: selectedProducts,
                 deliveryAddress: address,
             });

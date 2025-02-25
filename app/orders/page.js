@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import styles from './OrderPage.module.css';
+import urls from "@/.env";
 
 export default function OrderPage({ params }) {
     const [order, setOrder] = useState(null);
@@ -10,7 +11,7 @@ export default function OrderPage({ params }) {
     const [error, setError] = useState('');
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/orders/${params.orderId}`)
+        axios.get(`${urls.API_BASE_URL}/orders/${params.orderId}`)
             .then((response) => {
                 setOrder(response.data);
                 setLoading(false);

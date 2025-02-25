@@ -1,10 +1,11 @@
 import axios from 'axios';
+import urls from "@/.env";
 
 export async function POST(request) {
     const { productIds, deliveryAddress } = await request.json();
 
     try {
-        const response = await axios.post('http://localhost:8080/api/orders', {
+        const response = await axios.post(`${urls.API_BASE_URL}/orders`, {
             productIds,
             deliveryAddress,
         });

@@ -1,6 +1,6 @@
-// app/hooks/useFetchProducts.js
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import urls from "@/.env";
 
 export const useFetchProducts = () => {
     const [products, setProducts] = useState([]);
@@ -8,7 +8,7 @@ export const useFetchProducts = () => {
     const [error, setError] = useState('');
 
     useEffect(() => {
-        axios.get('http://localhost:8080/api/products')
+        axios.get(urls.API_BASE_URL + '/products')
             .then((response) => {
                 setProducts(response.data);
                 setLoading(false);
