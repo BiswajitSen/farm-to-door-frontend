@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import styles from './Layout.module.css';
-import ImageModal from './ImageModal';
+import styles from '../Layout/Layout.module.css';
+import ImageModal from '../ImageModal/ImageModal';
 import urls from "@/.env";
 
 const ProductList = ({ products, cart, onAddOne, onRemoveOne }) => {

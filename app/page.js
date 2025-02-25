@@ -3,10 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import { AppProvider, useAppContext } from './context';
 import { useFetchProducts, useHandleOrderSubmit } from './hooks';
-import ProductList from './ProductList';
-import OrderForm from './OrderForm';
-import Layout from "@/app/layout";
-import styles from './Layout.module.css';
+import ProductList from './components/ProductList/ProductList';
+import OrderForm from './components/OrderForm/OrderForm';
+import Layout from "@/app/components/Layout/layout";
+import styles from './components/Layout/Layout.module.css';
 
 const HomePage = () => {
     useFetchProducts();
@@ -17,7 +17,8 @@ const HomePage = () => {
         success,
         products,
         address,
-        setAddress
+        setAddress,
+        setError,
     } = useAppContext();
     const [cart, setCart] = useState({});
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -107,6 +108,7 @@ const HomePage = () => {
                     selectedProducts={products.filter(product => cart[product._id])}
                     cart={cart}
                     orderPlacedSuccessfully={orderPlacedSuccessfully}
+                    setError={setError}
                 />
             )}
             <footer className={styles.footer}>

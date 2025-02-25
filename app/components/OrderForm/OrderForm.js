@@ -1,10 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import styles from './OrderForm.module.css';
 
 const OrderForm = ({ address, setAddress, onSubmit, onClose, selectedProducts, cart, orderPlacedSuccessfully }) => {
+    const [error, setError] = useState('');
+
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        if (selectedProducts.length === 0) {
+            setError('At least one product must be selected');
+            return;
+        }
+
+        if (!address) {
+            setError('Address is required');
+            return;
+        }
+
         const orderReq = {
             address,
             products: selectedProducts.map(product => ({
@@ -38,13 +51,14 @@ const OrderForm = ({ address, setAddress, onSubmit, onClose, selectedProducts, c
                     <p>Total Items: {totalItems}</p>
                     <p>Total Cost: ${totalCost.toFixed(2)}</p>
                 </div>
+                {error && <div className={styles.errorMessage}>{error}</div>}
                 <form onSubmit={handleSubmit}>
                     <input
                         type="text"
                         value={address}
                         onChange={(e) => setAddress(e.target.value)}
                         placeholder="Enter your address"
-                        className={styles.input}
+                        className={`${styles.input} ${error && !address ? styles.inputError : ''}`}
                     />
                     <button type="submit" className={styles.submitButton}>Submit Order</button>
                 </form>

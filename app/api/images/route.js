@@ -16,7 +16,7 @@ export async function GET(request) {
         return new Response(image, {
             status: 200,
             headers: {
-                'Content-Type': 'image/avrf', // Adjust the content type based on your image format
+                'Content-Type': 'image/avrf',
             },
         });
     } catch (error) {
