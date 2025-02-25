@@ -21,21 +21,22 @@ export const useFetchProducts = () => {
 };
 
 export const useHandleOrderSubmit = () => {
-    const { selectedProducts, address, setError, setSuccess } = useAppContext();
+    const { setError, setSuccess } = useAppContext();
 
-    const handleOrderSubmit = async () => {
-        if (!address) {
+    const handleOrderSubmit = async (orderReq) => {
+        if (!orderReq.address) {
             setError('Address is required');
             return;
         }
 
         try {
-            console.log("DEBUG:" + selectedProducts);
             const response = await axios.post(`${urls.API_BASE_URL}/orders`, {
-                productIds: selectedProducts,
-                deliveryAddress: address,
+                productIds: orderReq.products.map(product => ({
+                    productId: product.productId,
+                    quantity: product.quantity
+                })),
+                deliveryAddress: orderReq.address,
             });
-            console.log('Order placed:', response.data);
             setSuccess('Order placed successfully');
             setError('');
         } catch (err) {

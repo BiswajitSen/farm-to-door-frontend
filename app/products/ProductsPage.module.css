@@ -16,12 +16,18 @@
 }
 
 .productItem {
-    background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 8px;
-    padding: 10px;
+    padding: 16px;
     text-align: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(145deg, #f0f0f0, #cacaca);
+    box-shadow: 5px 5px 10px #dda0dd, -5px -5px 10px #dda0dd; /* Plum shade */
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.productItem:hover {
+    transform: scale(1.05);
+    box-shadow: 10px 10px 20px #dda0dd, -10px -10px 20px #dda0dd; /* Plum shade */
 }
 
 .productItem button {

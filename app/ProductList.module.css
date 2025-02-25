@@ -1,20 +1,129 @@
+.productItem {
+    position: relative;
+}
+
+.fullScreenOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.fullScreenOverlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.fullScreenOverlay img {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 8px;
+}
+
 .productList {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 10px;
-    list-style-type: none;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 24px;
+    list-style: none;
     padding: 0;
+    margin: 0;
 }
 
 .productItem {
-    background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 8px;
-    padding: 10px;
+    padding: 16px;
     text-align: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(145deg, #f0f0f0, #cacaca);
+    box-shadow: 5px 5px 10px #bebebe, -5px -5px 10px #ffffff;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.productItem button {
+.productImage {
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+
+.productDetails {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.productName {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #333;
+}
+
+.productPrice {
+    font-size: 1.2em;
+    color: #007bff;
+}
+
+.button {
+    padding: 10px 20px;
+    font-size: 1em;
+    color: #fff;
+    background-color: #b565a7; /* Deeper plum background */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.button:hover {
+    background-color: #8b3a62; /* Darker plum on hover */
+}
+.button.selected {
+    background-color: lightgreen;
+    color: #000;
+}
+
+.button.selected {
+    background-color: lightgreen;
+    color: #000;
+}
+
+.buttonGroup {
+    display: flex;
+    justify-content: space-between;
     margin-top: 10px;
+}
+
+.addButton, .removeButton {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s;
+}
+
+.addButton:hover, .removeButton:hover {
+    background-color: #0056b3;
+}
+
+.removeButton {
+    background-color: #dc3545;
+}
+
+.removeButton:hover {
+    background-color: #c82333;
 }
