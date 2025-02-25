@@ -155,3 +155,9 @@
 .inputError {
     border: 1px solid red;
 }
+
+.submitButton:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    opacity: 0.6;
+}

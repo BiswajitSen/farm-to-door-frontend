@@ -29,6 +29,10 @@ export const useHandleOrderSubmit = () => {
             return;
         }
 
+        const authToken = localStorage.getItem('authToken');
+        const username = localStorage.getItem('username');
+        console.log("DEBUG"+ username);
+
         try {
             const response = await axios.post(`${urls.API_BASE_URL}/orders`, {
                 productIds: orderReq.products.map(product => ({
@@ -36,6 +40,11 @@ export const useHandleOrderSubmit = () => {
                     quantity: product.quantity
                 })),
                 deliveryAddress: orderReq.address,
+                username: username
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
             });
             setSuccess('Order placed successfully');
             setError('');

@@ -4,6 +4,7 @@ import styles from './OrderForm.module.css';
 
 const OrderForm = ({ address, setAddress, onSubmit, onClose, selectedProducts, cart, orderPlacedSuccessfully }) => {
     const [error, setError] = useState('');
+    const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -25,6 +26,8 @@ const OrderForm = ({ address, setAddress, onSubmit, onClose, selectedProducts, c
                 quantity: cart[product._id]
             }))
         };
+
+        setIsSubmitDisabled(true);
         onSubmit(orderReq);
     };
 
@@ -60,7 +63,7 @@ const OrderForm = ({ address, setAddress, onSubmit, onClose, selectedProducts, c
                         placeholder="Enter your address"
                         className={`${styles.input} ${error && !address ? styles.inputError : ''}`}
                     />
-                    <button type="submit" className={styles.submitButton}>Submit Order</button>
+                    <button type="submit" className={styles.submitButton} disabled={isSubmitDisabled}>Submit Order</button>
                 </form>
                 <button onClick={onClose} className={styles.closeButton}>X</button>
             </div>
