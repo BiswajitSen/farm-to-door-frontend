@@ -6,11 +6,14 @@ import { AppProvider, useAppContext } from './context';
 import { useFetchProducts, useHandleOrderSubmit } from './hooks';
 import ProductList from './components/ProductList/ProductList';
 import OrderForm from './components/OrderForm/OrderForm';
+import OrderDetailsModal from './components/OrderDetailsModal/OrderDetailsModal';
 import Layout from "@/app/components/Layout/layout";
 import LogoutButton from "@/app/components/LogoutButton/LogoutButton";
 import Loader from "@/app/components/Loader/Loader";
 import LoginPromptModal from './components/LoginPromptModal/LoginPromptModal';
 import styles from './components/Layout/Layout.module.css';
+import axios from 'axios';
+import urls from "@/.env";
 
 const HomePage = () => {
     useFetchProducts();
@@ -18,7 +21,6 @@ const HomePage = () => {
     const {
         loading,
         error,
-        success,
         products,
         address,
         setAddress,
@@ -33,14 +35,14 @@ const HomePage = () => {
     const [loadingLogout, setLoadingLogout] = useState(false);
     const [loadingSignup, setLoadingSignup] = useState(false);
     const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-    const [userName, setUserName] = useState('');
+    const [loadingOrder, setLoadingOrder] = useState(false);
+    const [orderDetails, setOrderDetails] = useState(null);
     const router = useRouter();
 
     useEffect(() => {
         const token = localStorage.getItem('authToken');
-        const storedUserName = localStorage.getItem('userName');
+        const storedUserName = localStorage.getItem('username');
         setIsLoggedIn(!!token);
-        setUserName(storedUserName || '');
         if (token) {
             const savedCart = JSON.parse(localStorage.getItem('cart')) || {};
             setCart(savedCart);
@@ -89,8 +91,7 @@ const HomePage = () => {
 
     const handleOrderSubmitWithPrompt = async (orderReq) => {
         const authToken = localStorage.getItem('authToken');
-        const orderWithUser = { ...orderReq, userName, authToken };
-        await handleOrderSubmit(orderWithUser);
+        await handleOrderSubmit(orderReq);
         setOrderPlacedSuccessfully(true);
         setCart({});
         setTimeout(() => {
@@ -103,7 +104,7 @@ const HomePage = () => {
         setLoadingLogout(true);
         setTimeout(() => {
             localStorage.removeItem('authToken');
-            localStorage.removeItem('userName');
+            localStorage.removeItem('username');
             setIsLoggedIn(false);
             setLoadingLogout(false);
             router.push('/');
@@ -124,6 +125,34 @@ const HomePage = () => {
             setLoadingSignup(false);
             router.push('/signup');
         }, 3000);
+    };
+
+    const handleFetchOrderDetails = async () => {
+        setLoadingOrder(true);
+        const authToken = localStorage.getItem('authToken');
+        const username = localStorage.getItem('username');
+
+        try {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            const response = await axios.get(`${urls.API_BASE_URL}/orders`, {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                },
+                params: {
+                    username: username
+                }
+            });
+            setOrderDetails(response.data);
+        } catch (error) {
+            console.error('Error fetching order details:', error);
+            setError('Failed to fetch order details');
+        } finally {
+            setLoadingOrder(false);
+        }
+    };
+
+    const handleCloseOrderDetails = () => {
+        setOrderDetails(null);
     };
 
     return (
@@ -148,6 +177,13 @@ const HomePage = () => {
                         onClick={handleOpenModal}
                     >
                         Cart ({Object.values(cart).reduce((a, b) => a + b, 0)})
+                    </button>
+                    <button
+                        className={styles.orderButton}
+                        onClick={handleFetchOrderDetails}
+                        disabled={loadingOrder}
+                    >
+                        Fetch Order Details
                     </button>
                 </div>
             </header>
@@ -188,6 +224,13 @@ const HomePage = () => {
                     cart={cart}
                     orderPlacedSuccessfully={orderPlacedSuccessfully}
                     setError={setError}
+                />
+            )}
+            {loadingOrder && <Loader />} {/* Show Loader when loading order */}
+            {orderDetails && (
+                <OrderDetailsModal
+                    orderDetails={orderDetails}
+                    onClose={handleCloseOrderDetails}
                 />
             )}
             <footer className={styles.footer}>

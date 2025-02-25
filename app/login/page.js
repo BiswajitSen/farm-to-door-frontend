@@ -58,9 +58,6 @@ const LoginPage = () => {
             {error && <Modal message={error} onClose={closeModal} />}
             {loading && <Loader />}
             <LoginForm onLogin={handleLogin} />
-            <button onClick={handleSignupRedirect} className={styles.signupButton}>
-                Signup
-            </button>
         </div>
     );
 };
