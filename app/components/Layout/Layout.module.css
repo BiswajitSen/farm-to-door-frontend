@@ -299,3 +299,28 @@
     border: 1px solid #ccc;
     background-color: #f9f9f9;
 }
+
+.vendorSection {
+    display: flex;
+    justify-content: space-between;
+    background-color: #f0f8ff;
+    padding: 20px;
+    text-align: center;
+    margin-top: 20px;
+    border: 2px solid #007bff;
+    border-radius: 10px;
+}
+
+.vendorButton {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.vendorButton:hover {
+    background-color: #0056b3;
+}

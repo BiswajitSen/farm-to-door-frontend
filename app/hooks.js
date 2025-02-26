@@ -31,13 +31,13 @@ export const useHandleOrderSubmit = () => {
 
         const authToken = localStorage.getItem('authToken');
         const username = localStorage.getItem('username');
-        console.log("DEBUG"+ username);
 
         try {
             const response = await axios.post(`${urls.API_BASE_URL}/orders`, {
                 productIds: orderReq.products.map(product => ({
                     productId: product.productId,
-                    quantity: product.quantity
+                    quantity: product.quantity,
+                    boughtFrom: product.boughtFrom
                 })),
                 deliveryAddress: orderReq.address,
                 username: username

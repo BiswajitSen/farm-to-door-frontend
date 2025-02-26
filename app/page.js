@@ -105,6 +105,7 @@ const HomePage = () => {
         setTimeout(() => {
             localStorage.removeItem('authToken');
             localStorage.removeItem('username');
+            localStorage.removeItem('cart');
             setIsLoggedIn(false);
             setLoadingLogout(false);
             router.push('/');
@@ -125,6 +126,10 @@ const HomePage = () => {
             setLoadingSignup(false);
             router.push('/signup');
         }, 3000);
+    };
+
+    const handleVendorRedirect = () => {
+        router.push('/vendor');
     };
 
     const handleFetchOrderDetails = async () => {
@@ -239,6 +244,17 @@ const HomePage = () => {
                     onClose={handleCloseOrderDetails}
                 />
             )}
+
+            <section className={styles.vendorSection}>
+                <h2>Want to host your products?</h2>
+                <button
+                    className={styles.vendorButton}
+                    onClick={handleVendorRedirect}
+                >
+                    Click here
+                </button>
+            </section>
+
             <footer className={styles.footer}>
                 <p>&copy; 2024 Rural Delivery</p>
             </footer>

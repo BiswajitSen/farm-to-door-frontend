@@ -32,7 +32,13 @@ const LoginPage = () => {
                 localStorage.setItem('authToken', data.token);
                 localStorage.setItem('username', username);
                 await minLoadingTime;
-                router.push('/');
+                const redirectAfterLogin = localStorage.getItem('redirectAfterLogin');
+                if (redirectAfterLogin) {
+                    localStorage.removeItem('redirectAfterLogin');
+                    router.push(redirectAfterLogin);
+                } else {
+                    router.push('/');
+                }
             } else {
                 const errorData = await response.json();
                 setError(errorData.message || 'Invalid credentials');

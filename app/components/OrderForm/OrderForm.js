@@ -14,18 +14,25 @@ const OrderForm = ({ address, setAddress, onSubmit, onClose, selectedProducts, c
             return;
         }
 
-        if (!address) {
-            setError('Address is required');
+        if (!address || address.length < 10) {
+            setError('Invalid address');
             return;
         }
 
         const orderReq = {
             address,
-            products: selectedProducts.map(product => ({
-                productId: product._id,
-                quantity: cart[product._id]
-            }))
+            products: selectedProducts.map(product => {
+                console.log("DEBUG", product);
+                return {
+                    productId: product._id,
+                    quantity: cart[product._id],
+                    boughtFrom: product.soldBy
+                }
+            })
         };
+
+        console.log("DEBUG", orderReq);
+
 
         setIsSubmitDisabled(true);
         onSubmit(orderReq);
