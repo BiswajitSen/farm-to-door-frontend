@@ -128,6 +128,12 @@ const HomePage = () => {
     };
 
     const handleFetchOrderDetails = async () => {
+        if (!isLoggedIn) {
+            localStorage.setItem('cart', JSON.stringify(cart));
+            setShowLoginPrompt(true);
+            return;
+        }
+
         setLoadingOrder(true);
         const authToken = localStorage.getItem('authToken');
         const username = localStorage.getItem('username');
