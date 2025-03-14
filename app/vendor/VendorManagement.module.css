@@ -1,11 +1,36 @@
-/* Existing styles */
-
+/* VendorManagement.module.css */
 .container {
     padding: 20px;
+    flex-direction: column;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.h1, .h2 {
+    color: #343a40;
+    text-align: center;
+}
+
+.button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.button:hover {
+    background-color: #0056b3;
 }
 
 .addProductSection, .listedProductsSection, .ordersSection {
     margin-bottom: 20px;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .addProductSection input, .addProductSection textarea, .addProductSection button {
@@ -17,19 +42,8 @@
     padding: 10px;
     width: 100%;
     max-width: 300px;
-}
-
-.addProductSection button {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
+    border: 1px solid #ced4da;
     border-radius: 5px;
-    cursor: pointer;
-}
-
-.addProductSection button:hover {
-    background-color: #0056b3;
 }
 
 .productList {
@@ -67,14 +81,6 @@
     list-style-type: none;
 }
 
-.orderCard:hover {
-    transform: translateY(-5px);
-}
-
-.orderCard h3 {
-    margin-top: 0;
-}
-
 .orderCard {
     background-color: #fff;
     border: 1px solid #ddd;
@@ -89,6 +95,14 @@
     align-items: center;
     gap: 1em;
     height: 340px;
+}
+
+.orderCard:hover {
+    transform: translateY(-5px);
+}
+
+.orderCard h3 {
+    margin-top: 0;
 }
 
 .orderItem {
@@ -127,8 +141,26 @@
     margin-top: 5px;
 }
 
+.homeButton {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-bottom: 20px;
+}
+
 /* Mobile styles */
 @media (max-width: 768px) {
+    .container {
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 1px;
+    }
+
     .orderCard {
         width: 100%;
         height: auto;
@@ -139,6 +171,6 @@
     }
 
     .addProductSection input, .addProductSection textarea {
-        max-width: 100%;
+        max-width: 98%;
     }
 }

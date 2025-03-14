@@ -87,8 +87,10 @@ const Page = () => {
 
     return (
         <div className={styles.container}>
+            <div className={styles.headerContainer}>
             <h1>Vendor Management</h1>
-            <button onClick={handleHomeNavigation}>Home</button>
+            <button className={styles.homeButton} onClick={handleHomeNavigation}>Home</button>
+            </div>
             <section className={styles.addProductSection}>
                 <h2>Add New Product</h2>
                 <input
