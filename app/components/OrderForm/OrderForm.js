@@ -22,17 +22,15 @@ const OrderForm = ({ address, setAddress, onSubmit, onClose, selectedProducts, c
         const orderReq = {
             address,
             products: selectedProducts.map(product => {
-                console.log("DEBUG", product);
                 return {
                     productId: product._id,
+                    name: product.productName,
+                    imageUrl: product.imageUrl,
                     quantity: cart[product._id],
                     boughtFrom: product.soldBy
                 }
             })
         };
-
-        console.log("DEBUG", orderReq);
-
 
         setIsSubmitDisabled(true);
         onSubmit(orderReq);

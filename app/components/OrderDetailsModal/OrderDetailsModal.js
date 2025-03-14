@@ -2,7 +2,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import styles from './OrderDetailsModal.module.css';
-import urls from '@/.env';
+import urls from '@/env';
 import {useAppContext} from "@/app/context";
 
 const OrderDetailsModal = ({ orderDetails, onClose }) => {

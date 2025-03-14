@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import styles from '../Layout/Layout.module.css';
 import ImageModal from '../ImageModal/ImageModal';
 import Modal from '../Modal/Modal';
-import urls from "@/.env";
+import urls from "@/env";
 
 const ProductList = ({ products, cart, onAddOne, onRemoveOne }) => {
     const [selectedImage, setSelectedImage] = useState(null);

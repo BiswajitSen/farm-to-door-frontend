@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import axios from 'axios';
 import { useAppContext } from './context';
-import urls from "@/.env";
+import urls from "@/env";
 
 export const useFetchProducts = () => {
     const { setProducts, setLoading, setError } = useAppContext();
@@ -36,6 +36,8 @@ export const useHandleOrderSubmit = () => {
             const response = await axios.post(`${urls.API_BASE_URL}/orders`, {
                 productIds: orderReq.products.map(product => ({
                     productId: product.productId,
+                    productName: product.productName,
+                    imageUrl: product.imageUrl,
                     quantity: product.quantity,
                     boughtFrom: product.boughtFrom
                 })),
