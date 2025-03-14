@@ -1,7 +1,7 @@
 "use client";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUserPlus, faSignInAlt, faShoppingCart, faClipboardList } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faUserPlus, faSignInAlt, faShoppingCart, faClipboardList } from '@fortawesome/free-solid-svg-icons';
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -273,12 +273,13 @@ const HomePage = () => {
             )}
 
             <section className={styles.vendorSection}>
-                <h2>Want to host your products?</h2>
+                <h2>Become a Vendor and Showcase Your Products!</h2>
+                <p>Join our platform to reach a wider audience and grow your business.</p>
                 <button
                     className={styles.vendorButton}
                     onClick={handleVendorRedirect}
                 >
-                    Click here
+                    <FontAwesomeIcon icon={faArrowRight} />
                 </button>
             </section>
 
