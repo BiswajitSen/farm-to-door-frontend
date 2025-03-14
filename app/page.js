@@ -35,11 +35,14 @@ const HomePage = () => {
     const [isBlinking, setIsBlinking] = useState(false);
     const [orderPlacedSuccessfully, setOrderPlacedSuccessfully] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [loadingLogin, setLoadingLogin] = useState(false);
-    const [loadingLogout, setLoadingLogout] = useState(false);
-    const [loadingSignup, setLoadingSignup] = useState(false);
+    const [loadingState, setLoadingState] = useState({
+        login: false,
+        logout: false,
+        signup: false,
+        order: false,
+        vendor: false
+    });
     const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-    const [loadingOrder, setLoadingOrder] = useState(false);
     const [orderDetails, setOrderDetails] = useState(null);
     const router = useRouter();
 
@@ -128,35 +131,39 @@ const HomePage = () => {
     };
 
     const handleLogout = () => {
-        setLoadingLogout(true);
+        setLoadingState(prevState => ({ ...prevState, logout: true }));
         setTimeout(() => {
             localStorage.removeItem('authToken');
             localStorage.removeItem('username');
             localStorage.removeItem('cart');
             setIsLoggedIn(false);
-            setLoadingLogout(false);
+            setLoadingState(prevState => ({ ...prevState, logout: false }));
             router.push('/');
         }, 3000);
     };
 
     const handleLoginRedirect = () => {
-        setLoadingLogin(true);
+        setLoadingState(prevState => ({ ...prevState, login: true }));
         setTimeout(() => {
-            setLoadingLogin(false);
+            setLoadingState(prevState => ({ ...prevState, login: false }));
             router.push('/login');
         }, 3000);
     };
 
     const handleSignupRedirect = () => {
-        setLoadingSignup(true);
+        setLoadingState(prevState => ({ ...prevState, signup: true }));
         setTimeout(() => {
-            setLoadingSignup(false);
+            setLoadingState(prevState => ({ ...prevState, signup: false }));
             router.push('/signup');
         }, 3000);
     };
 
     const handleVendorRedirect = () => {
-        router.push('/vendor');
+        setLoadingState(prevState => ({ ...prevState, vendor: true }));
+        setTimeout(() => {
+            setLoadingState(prevState => ({ ...prevState, vendor: false }));
+            router.push('/vendor');
+        }, 2000);
     };
 
     const handleFetchOrderDetails = async () => {
@@ -166,7 +173,7 @@ const HomePage = () => {
             return;
         }
 
-        setLoadingOrder(true);
+        setLoadingState(prevState => ({ ...prevState, order: true }));
         const authToken = localStorage.getItem('authToken');
         const username = localStorage.getItem('username');
 
@@ -185,7 +192,7 @@ const HomePage = () => {
             console.error('Error fetching order details:', error);
             setError('Failed to fetch order details');
         } finally {
-            setLoadingOrder(false);
+            setLoadingState(prevState => ({ ...prevState, order: false }));
         }
     };
 
@@ -219,14 +226,14 @@ const HomePage = () => {
                     <button
                         className={styles.button}
                         onClick={handleFetchOrderDetails}
-                        disabled={loadingOrder}
+                        disabled={loadingState.order}
                     >
                         <FontAwesomeIcon icon={faClipboardList} />
                     </button>
                 </div>
             </header>
 
-            {(loadingLogin || loadingLogout || loadingSignup) && <Loader />}
+            {(loadingState.login || loadingState.logout || loadingState.signup || loadingState.vendor) && <Loader />}
 
             {showLoginPrompt && (
                 <LoginPromptModal
@@ -264,7 +271,7 @@ const HomePage = () => {
                     setError={setError}
                 />
             )}
-            {loadingOrder && <Loader />} {/* Show Loader when loading order */}
+            {loadingState.order && <Loader />} {/* Show Loader when loading order */}
             {orderDetails && (
                 <OrderDetailsModal
                     orderDetails={orderDetails}
