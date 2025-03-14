@@ -1,5 +1,8 @@
 "use client";
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUserPlus, faSignInAlt, faShoppingCart, faClipboardList } from '@fortawesome/free-solid-svg-icons';
+
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { AppProvider, useAppContext } from './context';
@@ -199,26 +202,26 @@ const HomePage = () => {
                         <LogoutButton onLogout={handleLogout} />
                     ) : (
                         <>
-                            <button onClick={handleSignupRedirect} className={styles.signupButton}>
-                                Signup
+                            <button onClick={handleSignupRedirect} className={styles.button}>
+                                <FontAwesomeIcon icon={faUserPlus} />
                             </button>
-                            <button onClick={handleLoginRedirect} className={styles.loginButton}>
-                                Login
+                            <button onClick={handleLoginRedirect} className={styles.button}>
+                                <FontAwesomeIcon icon={faSignInAlt} />
                             </button>
                         </>
                     )}
                     <button
-                        className={`${styles.cartButton} ${isBlinking ? styles.blink : ''}`}
+                        className={`${styles.button} ${isBlinking ? styles.blink : ''}`}
                         onClick={handleOpenModal}
                     >
-                        Cart ({Object.values(cart).reduce((a, b) => a + b, 0)})
+                        <FontAwesomeIcon icon={faShoppingCart} />
                     </button>
                     <button
-                        className={styles.orderButton}
+                        className={styles.button}
                         onClick={handleFetchOrderDetails}
                         disabled={loadingOrder}
                     >
-                        Fetch Order Details
+                        <FontAwesomeIcon icon={faClipboardList} />
                     </button>
                 </div>
             </header>
