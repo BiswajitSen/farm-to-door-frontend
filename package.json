@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "setup": "npm install",
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
@@ -11,7 +12,9 @@
     "test": "jest"
   },
   "dependencies": {
+    "@next/env": "^15.2.2",
     "axios": "^1.7.9",
+    "dotenv": "^16.4.7",
     "next": "15.1.7",
     "prop-types": "^15.8.1",
     "react": "^19.0.0",
