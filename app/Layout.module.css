@@ -27,16 +27,6 @@
     margin: 0;
 }
 
-.productItem {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 16px;
-    text-align: center;
-    background: linear-gradient(145deg, #f0f0f0, #cacaca);
-    box-shadow: 5px 5px 10px #bebebe, -5px -5px 10px #ffffff;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
 .productItem:hover {
     transform: scale(1.05);
     box-shadow: 10px 10px 20px #bebebe, -10px -10px 20px #ffffff;
@@ -75,13 +65,12 @@
     padding: 16px;
     text-align: center;
     background: linear-gradient(145deg, #f0f0f0, #cacaca);
-    box-shadow: 5px 5px 10px #dda0dd, -5px -5px 10px #dda0dd; /* Plum shade */
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .productItem:hover {
     transform: scale(1.05);
-    box-shadow: 10px 10px 20px #dda0dd, -10px -10px 20px #dda0dd; /* Plum shade */
+    box-shadow: 5px 5px 10px violet, -5px -5px 20px royalblue; /* Plum shade */
 }
 
 .button.selected {
@@ -173,6 +162,10 @@
     cursor: pointer;
     font-size: 1em;
     transition: background-color 0.3s, transform 0.2s;
+    height: 1.8em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .addButton {
@@ -371,7 +364,6 @@
     animation: blink 1s ease-in-out 3;
 }
 
-/* Mobile styles */
 @media (max-width: 768px) {
     .header {
         flex-direction: column;

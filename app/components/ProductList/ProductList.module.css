@@ -63,7 +63,7 @@
     padding: 10px 20px;
     font-size: 1em;
     color: #fff;
-    background-color: #b565a7; /* Deeper plum background */
+    background-color: #b565a7;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -71,7 +71,7 @@
 }
 
 .button:hover {
-    background-color: #8b3a62; /* Darker plum on hover */
+    background-color: #8b3a62;
 }
 .button.selected {
     background-color: lightgreen;

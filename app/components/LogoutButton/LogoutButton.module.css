@@ -11,3 +11,19 @@
 .button:hover {
     background-color: #0056b3;
 }
+
+@media (max-width: 768px) {
+    .button {
+        width: auto;
+        margin-bottom: 0;
+        padding: 10px;
+        font-size: 16px;
+        border: none;
+        color: white;
+        background: transparent;
+    }
+
+    .button i {
+        font-size: 24px;
+    }
+}
