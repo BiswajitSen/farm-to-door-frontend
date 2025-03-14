@@ -13,10 +13,10 @@ import OrderDetailsModal from './components/OrderDetailsModal/OrderDetailsModal'
 import Layout from "@/app/layout.js";
 import LogoutButton from "@/app/components/LogoutButton/LogoutButton";
 import Loader from "@/app/components/Loader/Loader";
-import LoginPromptModal from './components/LoginPromptModal/LoginPromptModal';
 import styles from './Layout.module.css';
 import axios from 'axios';
 import urls from "@/env";
+import DualAnswerModal from "@/app/components/DualAnsModal/DualAnswerModal.js";
 
 const HomePage = () => {
     useFetchProducts();
@@ -117,7 +117,6 @@ const HomePage = () => {
             handleCloseModal();
         }, 3000);
 
-        // Fetch updated product data
         try {
             const response = await axios.get(`${urls.API_BASE_URL}/products`, {
                 headers: {
@@ -236,9 +235,14 @@ const HomePage = () => {
             {(loadingState.login || loadingState.logout || loadingState.signup || loadingState.vendor) && <Loader />}
 
             {showLoginPrompt && (
-                <LoginPromptModal
-                    onClose={() => setShowLoginPrompt(false)}
-                    onLogin={handleLoginRedirect}
+                <DualAnswerModal
+                    message={"Please login to place an order."}
+                    onCancel={() => setShowLoginPrompt(false)}
+                    onConfirm={() => {
+                        setShowLoginPrompt(false);
+                        handleLoginRedirect();
+                    }}
+                    buttonText={{confirm: "Login"}}
                 />
             )}
 

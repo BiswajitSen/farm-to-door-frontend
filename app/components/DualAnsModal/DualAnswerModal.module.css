@@ -8,6 +8,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 1000;
 }
 
 .modalContent {
@@ -24,7 +25,8 @@
     margin-top: 20px;
 }
 
-.confirmButton {
+.confirmButton, .cancelButton {
+    width: 100px; /* Set a fixed width for both buttons */
     background-color: #dc3545;
     color: white;
     border: none;
@@ -40,14 +42,13 @@
 
 .cancelButton {
     background-color: #6c757d;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
 }
 
 .cancelButton:hover {
     background-color: #5a6268;
+}
+
+.message {
+    font-size: 1.2em;
+    font-weight: lighter;
 }

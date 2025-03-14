@@ -1,21 +1,19 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import axios from 'axios';
-import { useRouter } from 'next/navigation';
+import {useRouter} from 'next/navigation';
 import styles from './VendorManagement.module.css';
-import { AppProvider } from "@/app/context.js";
+import {AppProvider} from "@/app/context.js";
 import Layout from "@/app/layout.js";
 import urls from "@/env";
-import LoginPromptModal from "@/app/components/LoginPromptModal/LoginPromptModal.js";
 import OrderSuccessModal from "@/app/components/OrderSuccessModal/OrderSuccessModal.js";
-import Modal from "@/app/components/Modal/Modal.js";
-import DeleteConfirmModal from "@/app/components/DeleteConfirmModal/DeleteConfirmModal.js";
+import DualAnswerModal from "@/app/components/DualAnsModal/DualAnswerModal.js";
 
 const Page = () => {
     const [products, setProducts] = useState([]);
     const [orders, setOrders] = useState([]);
-    const [newProduct, setNewProduct] = useState({ name: '', description: '', price: 0, quantity: 0, image: null });
+    const [newProduct, setNewProduct] = useState({name: '', description: '', price: 0, quantity: 0, image: null});
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [showLoginPrompt, setShowLoginPrompt] = useState(false);
     const [showOrderSuccess, setShowOrderSuccess] = useState(false);
@@ -78,7 +76,7 @@ const Page = () => {
                 },
             });
             setProducts([...products, response.data]);
-            setNewProduct({ name: '', description: '', price: 0, quantity: 0, image: null });
+            setNewProduct({name: '', description: '', price: 0, quantity: 0, image: null});
             setShowOrderSuccess(true);
         } catch (error) {
             console.error('Error adding product:', error);
@@ -129,28 +127,28 @@ const Page = () => {
                     type="text"
                     placeholder="Product Name"
                     value={newProduct.name}
-                    onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
+                    onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
                 />
                 <textarea
                     placeholder="Product Description"
                     value={newProduct.description}
-                    onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
+                    onChange={(e) => setNewProduct({...newProduct, description: e.target.value})}
                 />
                 <input
                     type="number"
                     placeholder="Price"
                     value={newProduct.price}
-                    onChange={(e) => setNewProduct({ ...newProduct, price: parseFloat(e.target.value) })}
+                    onChange={(e) => setNewProduct({...newProduct, price: parseFloat(e.target.value)})}
                 />
                 <input
                     type="number"
                     placeholder="Quantity"
                     value={newProduct.quantity}
-                    onChange={(e) => setNewProduct({ ...newProduct, quantity: parseInt(e.target.value) })}
+                    onChange={(e) => setNewProduct({...newProduct, quantity: parseInt(e.target.value)})}
                 />
                 <input
                     type="file"
-                    onChange={(e) => setNewProduct({ ...newProduct, image: e.target.files[0] })}
+                    onChange={(e) => setNewProduct({...newProduct, image: e.target.files[0]})}
                 />
                 <button onClick={handleAddProduct}>Add Product</button>
             </section>
@@ -169,11 +167,12 @@ const Page = () => {
                     </section>
                     <section className={styles.ordersSection}>
                         <h2>Received Orders</h2>
-                        <ul >
+                        <ul>
                             <ul className={styles.orderList}>
                                 {orders.map((order) => (
                                     <li key={order._id} className={styles.orderCard}>
-                                        <img src={`${urls.API_BASE_URL}/images/${order.imageUrl}`} alt={order.productName} className={styles.productImage} />
+                                        <img src={`${urls.API_BASE_URL}/images/${order.imageUrl}`}
+                                             alt={order.productName} className={styles.productImage}/>
                                         <div>
                                             <h3>{order.productName}</h3>
                                             <p>Order ID: {order._id}</p>
@@ -187,16 +186,20 @@ const Page = () => {
                 </>
             )}
             {showLoginPrompt && (
-                <LoginPromptModal
-                    onClose={() => setShowLoginPrompt(false)}
-                    onLogin={() => router.push('/login')}
+                <DualAnswerModal
+                    message={"Please login to place an order."}
+                    onCancel={() => setShowLoginPrompt(false)}
+                    onConfirm={() => {
+                        setShowLoginPrompt(false);
+                        router.push('/login');
+                    }}
                 />
             )}
             {showOrderSuccess && (
-                <OrderSuccessModal onClose={() => setShowOrderSuccess(false)} />
+                <OrderSuccessModal onClose={() => setShowOrderSuccess(false)}/>
             )}
             {showDeleteConfirm && (
-                <DeleteConfirmModal
+                <DualAnswerModal
                     message="Are you sure you want to delete this product?"
                     onConfirm={handleDeleteConfirm}
                     onCancel={handleDeleteCancel}
@@ -209,7 +212,7 @@ const Page = () => {
 const App = () => (
     <AppProvider>
         <Layout>
-            <Page />
+            <Page/>
         </Layout>
     </AppProvider>
 );
