@@ -9,6 +9,8 @@ import Layout from "@/app/layout.js";
 import urls from "@/env";
 import LoginPromptModal from "@/app/components/LoginPromptModal/LoginPromptModal.js";
 import OrderSuccessModal from "@/app/components/OrderSuccessModal/OrderSuccessModal.js";
+import Modal from "@/app/components/Modal/Modal.js";
+import DeleteConfirmModal from "@/app/components/DeleteConfirmModal/DeleteConfirmModal.js";
 
 const Page = () => {
     const [products, setProducts] = useState([]);
@@ -17,13 +19,15 @@ const Page = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [showLoginPrompt, setShowLoginPrompt] = useState(false);
     const [showOrderSuccess, setShowOrderSuccess] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [productToDelete, setProductToDelete] = useState(null);
     const router = useRouter();
 
     useEffect(() => {
         const token = localStorage.getItem('authToken');
         setIsLoggedIn(!!token);
         if (token) {
-            fetchVendorData();
+            fetchVendorData().then();
         }
     }, []);
 
@@ -81,15 +85,43 @@ const Page = () => {
         }
     };
 
+    const handleDeleteClick = (productId) => {
+        setProductToDelete(productId);
+        setShowDeleteConfirm(true);
+    };
+
+    const handleDeleteConfirm = async () => {
+        const username = localStorage.getItem('username');
+        const authToken = localStorage.getItem('authToken');
+
+        try {
+            await axios.delete(`${urls.API_BASE_URL}/vendor/products/${productToDelete}?username=${username}`, {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            });
+            setProducts(products.filter(product => product._id !== productToDelete));
+            setShowDeleteConfirm(false);
+            setProductToDelete(null);
+        } catch (error) {
+            console.error('Error deleting product:', error);
+        }
+    };
+
+    const handleDeleteCancel = () => {
+        setShowDeleteConfirm(false);
+        setProductToDelete(null);
+    };
+
     const handleHomeNavigation = () => {
         router.push('/');
     };
 
     return (
         <div className={styles.container}>
-            <div className={styles.headerContainer}>
-            <h1>Vendor Management</h1>
-            <button className={styles.homeButton} onClick={handleHomeNavigation}>Home</button>
+            <div>
+                <h1>Vendor Management</h1>
+                <button className={styles.homeButton} onClick={handleHomeNavigation}>Home</button>
             </div>
             <section className={styles.addProductSection}>
                 <h2>Add New Product</h2>
@@ -130,6 +162,7 @@ const Page = () => {
                             {products.map((product) => (
                                 <li key={product._id} className={styles.productItem}>
                                     {product.name} - Quantity: {product.quantity}
+                                    <button onClick={() => handleDeleteClick(product._id)}>Delete</button>
                                 </li>
                             ))}
                         </ul>
@@ -161,6 +194,13 @@ const Page = () => {
             )}
             {showOrderSuccess && (
                 <OrderSuccessModal onClose={() => setShowOrderSuccess(false)} />
+            )}
+            {showDeleteConfirm && (
+                <DeleteConfirmModal
+                    message="Are you sure you want to delete this product?"
+                    onConfirm={handleDeleteConfirm}
+                    onCancel={handleDeleteCancel}
+                />
             )}
         </div>
     );
