@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { AppProvider } from '@/app/context';
 import Layout from '@/app/components/Layout/layout';
 import styles from './LoginPage.module.css';
-import urls from '@/.env';
+import urls from '@/env';
 import LoginForm from "@/app/components/LoginForm/LoginForm";
 import Modal from "@/app/components/Modal/Modal";
 import Loader from "@/app/components/Loader/Loader";

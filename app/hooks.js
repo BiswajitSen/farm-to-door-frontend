@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import axios from 'axios';
 import { useAppContext } from './context';
-import urls from "@/.env";
+import urls from "@/env";
 
 export const useFetchProducts = () => {
     const { setProducts, setLoading, setError } = useAppContext();
