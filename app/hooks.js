@@ -36,6 +36,8 @@ export const useHandleOrderSubmit = () => {
             const response = await axios.post(`${urls.API_BASE_URL}/orders`, {
                 productIds: orderReq.products.map(product => ({
                     productId: product.productId,
+                    productName: product.productName,
+                    imageUrl: product.imageUrl,
                     quantity: product.quantity,
                     boughtFrom: product.boughtFrom
                 })),
