@@ -7,11 +7,11 @@ import { useFetchProducts, useHandleOrderSubmit } from './hooks';
 import ProductList from './components/ProductList/ProductList';
 import OrderForm from './components/OrderForm/OrderForm';
 import OrderDetailsModal from './components/OrderDetailsModal/OrderDetailsModal';
-import Layout from "@/app/components/Layout/layout";
+import Layout from "@/app/layout.js";
 import LogoutButton from "@/app/components/LogoutButton/LogoutButton";
 import Loader from "@/app/components/Loader/Loader";
 import LoginPromptModal from './components/LoginPromptModal/LoginPromptModal';
-import styles from './components/Layout/Layout.module.css';
+import styles from './Layout.module.css';
 import axios from 'axios';
 import urls from "@/env";
 
