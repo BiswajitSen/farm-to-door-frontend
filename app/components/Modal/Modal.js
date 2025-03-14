@@ -5,10 +5,17 @@ import styles from './Modal.module.css';
 const Modal = ({ message, onClose }) => {
     return (
         <div className={styles.modalOverlay}>
-            <div className={styles.modalContent}>
-                <p>{message}</p>
-                <button onClick={onClose} className={styles.closeButton}>Close</button>
+        <div className={styles.card}>
+            <div className={styles.header}></div>
+            <div className={styles.info}>
+                <p className={styles.title}>Alert Page</p>
+                <p>{message + ' !!!'}</p>
             </div>
+            <div className={styles.footer}>
+                <p className={styles.tag}>#alert #msg </p>
+                <button type="button" className={styles.action} onClick={onClose}>Close</button>
+            </div>
+        </div>
         </div>
     );
 };
