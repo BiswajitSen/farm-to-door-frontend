@@ -1,5 +1,5 @@
 import axios from 'axios';
-import urls from "@/.env";
+import urls from "@/env";
 
 export async function POST(request) {
     const { productIds, deliveryAddress } = await request.json();

@@ -13,7 +13,7 @@ import Loader from "@/app/components/Loader/Loader";
 import LoginPromptModal from './components/LoginPromptModal/LoginPromptModal';
 import styles from './components/Layout/Layout.module.css';
 import axios from 'axios';
-import urls from "@/.env";
+import urls from "@/env";
 
 const HomePage = () => {
     useFetchProducts();

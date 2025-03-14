@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import styles from './VendorManagement.module.css';
 import { AppProvider } from "@/app/context.js";
 import Layout from "@/app/components/Layout/layout.js";
-import urls from "@/.env";
+import urls from "@/env";
 import LoginPromptModal from "@/app/components/LoginPromptModal/LoginPromptModal.js";
 import OrderSuccessModal from "@/app/components/OrderSuccessModal/OrderSuccessModal.js";
 
@@ -43,18 +43,8 @@ const Page = () => {
                 }
             });
 
-            // Include productName and imageUrl in orders
-            const updatedOrders = ordersResponse.data.map(order => {
-                const productDetails = productsResponse.data.find(p => p._id === order.productId);
-                return {
-                    ...order,
-                    productName: productDetails.name,
-                    imageUrl: productDetails.imageUrl
-                };
-            });
-
             setProducts(productsResponse.data);
-            setOrders(updatedOrders);
+            setOrders(ordersResponse.data);
         } catch (error) {
             console.error('Error fetching vendor data:', error);
         }
