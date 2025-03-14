@@ -22,6 +22,7 @@ const HomePage = () => {
         loading,
         error,
         products,
+        setProducts,
         address,
         setAddress,
         setError,
@@ -91,13 +92,36 @@ const HomePage = () => {
 
     const handleOrderSubmitWithPrompt = async (orderReq) => {
         const authToken = localStorage.getItem('authToken');
-        await handleOrderSubmit(orderReq);
+        const updatedOrderReq = {
+            ...orderReq,
+            products: orderReq.products.map(product => {
+                const productDetails = products.find(p => p._id === product.productId);
+                return {
+                    ...product,
+                    imageUrl: productDetails.imageUrl,
+                    productName: productDetails.name
+                };
+            })
+        };
+        await handleOrderSubmit(updatedOrderReq);
         setOrderPlacedSuccessfully(true);
         setCart({});
         setTimeout(() => {
             setOrderPlacedSuccessfully(false);
             handleCloseModal();
         }, 3000);
+
+        // Fetch updated product data
+        try {
+            const response = await axios.get(`${urls.API_BASE_URL}/products`, {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            });
+            setProducts(response.data);
+        } catch (error) {
+            console.error('Error fetching updated product data:', error);
+        }
     };
 
     const handleLogout = () => {

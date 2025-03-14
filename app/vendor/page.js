@@ -42,8 +42,19 @@ const Page = () => {
                     'Authorization': `Bearer ${authToken}`
                 }
             });
+
+            // Include productName and imageUrl in orders
+            const updatedOrders = ordersResponse.data.map(order => {
+                const productDetails = productsResponse.data.find(p => p._id === order.productId);
+                return {
+                    ...order,
+                    productName: productDetails.name,
+                    imageUrl: productDetails.imageUrl
+                };
+            });
+
             setProducts(productsResponse.data);
-            setOrders(ordersResponse.data);
+            setOrders(updatedOrders);
         } catch (error) {
             console.error('Error fetching vendor data:', error);
         }
@@ -80,9 +91,14 @@ const Page = () => {
         }
     };
 
+    const handleHomeNavigation = () => {
+        router.push('/');
+    };
+
     return (
         <div className={styles.container}>
             <h1>Vendor Management</h1>
+            <button onClick={handleHomeNavigation}>Home</button>
             <section className={styles.addProductSection}>
                 <h2>Add New Product</h2>
                 <input
@@ -118,9 +134,9 @@ const Page = () => {
                 <>
                     <section className={styles.listedProductsSection}>
                         <h2>Listed Products</h2>
-                        <ul >
+                        <ul className={styles.productList}>
                             {products.map((product) => (
-                                <li key={product._id}>
+                                <li key={product._id} className={styles.productItem}>
                                     {product.name} - Quantity: {product.quantity}
                                 </li>
                             ))}
@@ -129,11 +145,18 @@ const Page = () => {
                     <section className={styles.ordersSection}>
                         <h2>Received Orders</h2>
                         <ul >
-                            {orders.map((order) => (
-                                <li key={order._id}>
-                                    Order ID: {order._id}, Product: {order.productName}, Quantity: {order.quantity}
-                                </li>
-                            ))}
+                            <ul className={styles.orderList}>
+                                {orders.map((order) => (
+                                    <li key={order._id} className={styles.orderCard}>
+                                        <img src={`${urls.API_BASE_URL}/images/${order.imageUrl}`} alt={order.productName} className={styles.productImage} />
+                                        <div>
+                                            <h3>{order.productName}</h3>
+                                            <p>Order ID: {order._id}</p>
+                                            <p>Quantity: {order.quantity}</p>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
                         </ul>
                     </section>
                 </>

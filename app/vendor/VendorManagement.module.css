@@ -29,3 +29,96 @@
 .addProductSection button:hover {
     background-color: #0056b3;
 }
+
+.productList {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.productItem {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.productItem:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.productItem:hover {
+    background-color: #f1f1f1;
+}
+
+.productItem span {
+    font-weight: bold;
+}
+
+.orderList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+}
+
+.orderCard:hover {
+    transform: translateY(-5px);
+}
+
+.orderCard h3 {
+    margin-top: 0;
+}
+
+.orderCard {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: calc(33.333% - 20px);
+    box-sizing: border-box;
+    transition: transform 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5em;
+}
+
+.orderItem {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+}
+
+.orderItem:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.orderItem:hover {
+    background-color: #f1f1f1;
+}
+
+.orderItem img {
+    margin-right: 10px;
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+.orderItem div {
+    display: flex;
+    flex-direction: column;
+}
+
+.productImage {
+    width: 200px; /* Set the desired width */
+    height: 200px; /* Set the desired height */
+    object-fit: cover;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}

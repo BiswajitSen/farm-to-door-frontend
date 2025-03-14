@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import styles from '../Layout/Layout.module.css';
 import ImageModal from '../ImageModal/ImageModal';
+import Modal from '../Modal/Modal';
 import urls from "@/.env";
 
 const ProductList = ({ products, cart, onAddOne, onRemoveOne }) => {
     const [selectedImage, setSelectedImage] = useState(null);
+    const [modalMessage, setModalMessage] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleImageClick = (imageUrl) => {
         setSelectedImage(imageUrl);
@@ -16,12 +19,18 @@ const ProductList = ({ products, cart, onAddOne, onRemoveOne }) => {
     };
 
     const handleAddToCart = (productId) => {
-        const productElement = document.getElementById(`product-${productId}`);
-        productElement.classList.add(styles.moving);
-        setTimeout(() => {
-            productElement.classList.remove(styles.moving);
-            onAddOne(productId);
-        }, 1000);
+        const product = products.find(p => p._id === productId);
+        if (!cart[productId] || cart[productId] < product.quantity) {
+            const productElement = document.getElementById(`product-${productId}`);
+            productElement.classList.add(styles.moving);
+            setTimeout(() => {
+                productElement.classList.remove(styles.moving);
+                onAddOne(productId);
+            }, 1000);
+        } else {
+            setModalMessage('Cannot add more than available quantity');
+            setIsModalOpen(true);
+        }
     };
 
     return (
@@ -42,18 +51,26 @@ const ProductList = ({ products, cart, onAddOne, onRemoveOne }) => {
                         <div className={styles.productName}>{product.name}</div>
                         <div className={styles.productPrice}>{product.price} USD</div>
                     </div>
-                    {cart[product._id] ? (
-                        <div className={styles.buttonGroup}>
-                            <button onClick={() => onAddOne(product._id)} className={styles.addButton}>+</button>
-                            <div className={styles.quantityDisplay}>Selected: {cart[product._id]}</div>
-                            <button onClick={() => onRemoveOne(product._id)} className={styles.removeButton}>-</button>
-                        </div>
+                    {product.quantity > 0 ? (
+                        cart[product._id] ? (
+                            <div className={styles.buttonGroup}>
+                                <button onClick={() => handleAddToCart(product._id)} className={styles.addButton}>+</button>
+                                <div className={styles.quantityDisplay}>Selected: {cart[product._id]}</div>
+                                <button onClick={() => onRemoveOne(product._id)} className={styles.removeButton}>-</button>
+                            </div>
+                        ) : (
+                            <div className={styles.buttonGroup}>
+                                <button onClick={() => handleAddToCart(product._id)} className={styles.addButton}>Add to Cart</button>
+                                <div className={styles.quantityDisplay}>Available: {product.quantity}</div>
+                            </div>
+                        )
                     ) : (
-                        <button onClick={() => handleAddToCart(product._id)} className={styles.addButton}>Add to Cart</button>
+                        <button disabled className={styles.soldOutButton}>Sold Out</button>
                     )}
                 </div>
             ))}
             {selectedImage && <ImageModal imageUrl={selectedImage} onClose={handleCloseModal} />}
+            {isModalOpen && <Modal message={modalMessage} onClose={() => setIsModalOpen(false)} />}
         </div>
     );
 };
@@ -64,6 +81,7 @@ ProductList.propTypes = {
         name: PropTypes.string.isRequired,
         price: PropTypes.number.isRequired,
         imageUrl: PropTypes.string.isRequired,
+        quantity: PropTypes.number.isRequired,
     })).isRequired,
     cart: PropTypes.object.isRequired,
     onAddOne: PropTypes.func.isRequired,

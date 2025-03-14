@@ -324,3 +324,9 @@
 .vendorButton:hover {
     background-color: #0056b3;
 }
+
+.soldOutButton {
+    background-color: #ccc;
+    color: red;
+    cursor: not-allowed;
+}
