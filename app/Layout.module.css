@@ -9,7 +9,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 20px;
-    background-color: #6A0DAD;
+    background-color: #7A73D1;
     border-radius: 5px;
 }
 
@@ -38,7 +38,7 @@
 
 .button {
     padding: 10px 20px;
-    background-color: #007bff;
+    background-color: #0056b3;
     color: white;
     border: none;
     border-radius: 5px;
@@ -47,7 +47,7 @@
 }
 
 .button:hover {
-    background-color: #0056b3;
+    background-color: #211C84;
 }
 
 .button:disabled {
@@ -166,12 +166,12 @@
 }
 
 .addButton {
-    background-color: #28a745;
+    background-color: #497D74;
     color: #fff;
 }
 
 .addButton:hover {
-    background-color: #218838;
+    background-color: #27445D;
     transform: scale(1.05);
 }
 
@@ -294,14 +294,14 @@
     padding: 20px;
     text-align: center;
     margin-top: 20px;
-    border: 2px solid #007bff;
+    border: 2px solid #493D9E;
     border-radius: 10px;
     font-size: 1em;
 }
 
 .vendorSection h2 {
     font-size: 1.5em;
-    color: #007bff;
+    color: #493D9E;
     margin-bottom: 10px;
 }
 
@@ -314,7 +314,7 @@
 .vendorButton {
     border: none;
     cursor: pointer;
-    background: #007bff;
+    background: #493D9E;
     color: white;
     padding: 10px 20px;
     border-radius: 5px;
