@@ -152,6 +152,73 @@
     margin-bottom: 20px;
 }
 
+/* VendorManagement.module.css */
+
+.ordersSection {
+    margin-top: 20px;
+}
+
+.orderList {
+    list-style-type: none;
+    padding: 0;
+}
+
+.orderCard {
+    display: flex;
+    align-items: center;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.productImage {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-right: 15px;
+}
+
+.orderCard div {
+    flex: 1;
+}
+
+.orderCard h3 {
+    margin: 0;
+    font-size: 1.2em;
+    color: #333;
+}
+
+.orderCard p {
+    margin: 5px 0;
+    color: #666;
+}
+
+.orderCard select {
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-right: 10px;
+}
+
+.orderCard button {
+    margin-top: 0.5em;
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.orderCard button:hover {
+    background-color: #0056b3;
+}
+
 /* Mobile styles */
 @media (max-width: 768px) {
     .container {

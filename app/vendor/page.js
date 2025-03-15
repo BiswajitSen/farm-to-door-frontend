@@ -1,10 +1,10 @@
 "use client";
 
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {useRouter} from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import styles from './VendorManagement.module.css';
-import {AppProvider} from "@/app/context.js";
+import { AppProvider } from "@/app/context.js";
 import Layout from "@/app/layout.js";
 import urls from "@/env";
 import OrderSuccessModal from "@/app/components/OrderSuccessModal/OrderSuccessModal.js";
@@ -13,12 +13,13 @@ import DualAnswerModal from "@/app/components/DualAnsModal/DualAnswerModal.js";
 const Page = () => {
     const [products, setProducts] = useState([]);
     const [orders, setOrders] = useState([]);
-    const [newProduct, setNewProduct] = useState({name: '', description: '', price: 0, quantity: 0, image: null});
+    const [newProduct, setNewProduct] = useState({ name: '', description: '', price: 0, quantity: 0, image: null });
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [showLoginPrompt, setShowLoginPrompt] = useState(false);
     const [showOrderSuccess, setShowOrderSuccess] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [productToDelete, setProductToDelete] = useState(null);
+    const [orderStatus, setOrderStatus] = useState({});
     const router = useRouter();
 
     useEffect(() => {
@@ -76,7 +77,7 @@ const Page = () => {
                 },
             });
             setProducts([...products, response.data]);
-            setNewProduct({name: '', description: '', price: 0, quantity: 0, image: null});
+            setNewProduct({ name: '', description: '', price: 0, quantity: 0, image: null });
             setShowOrderSuccess(true);
         } catch (error) {
             console.error('Error adding product:', error);
@@ -115,6 +116,36 @@ const Page = () => {
         router.push('/');
     };
 
+    const handleStatusChange = (orderId, newStatus) => {
+        setOrderStatus(prevStatus => ({
+            ...prevStatus,
+            [orderId]: newStatus
+        }));
+    };
+
+    const updateOrderStatus = async (orderId) => {
+        const authToken = localStorage.getItem('authToken');
+        const newStatus = orderStatus[orderId];
+
+        try {
+            const username = localStorage.getItem('username');
+            await axios.put(`${urls.API_BASE_URL}/vendor/orders/${orderId}/status`,
+                {
+                    status: newStatus,
+                    username: username
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                }
+            );
+            fetchVendorData();
+        } catch (error) {
+            console.error('Error updating order status:', error);
+        }
+    };
+
     return (
         <div className={styles.container}>
             <div>
@@ -127,28 +158,28 @@ const Page = () => {
                     type="text"
                     placeholder="Product Name"
                     value={newProduct.name}
-                    onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
+                    onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
                 />
                 <textarea
                     placeholder="Product Description"
                     value={newProduct.description}
-                    onChange={(e) => setNewProduct({...newProduct, description: e.target.value})}
+                    onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
                 />
                 <input
                     type="number"
                     placeholder="Price"
                     value={newProduct.price}
-                    onChange={(e) => setNewProduct({...newProduct, price: parseFloat(e.target.value)})}
+                    onChange={(e) => setNewProduct({ ...newProduct, price: parseFloat(e.target.value) })}
                 />
                 <input
                     type="number"
                     placeholder="Quantity"
                     value={newProduct.quantity}
-                    onChange={(e) => setNewProduct({...newProduct, quantity: parseInt(e.target.value)})}
+                    onChange={(e) => setNewProduct({ ...newProduct, quantity: parseInt(e.target.value) })}
                 />
                 <input
                     type="file"
-                    onChange={(e) => setNewProduct({...newProduct, image: e.target.files[0]})}
+                    onChange={(e) => setNewProduct({ ...newProduct, image: e.target.files[0] })}
                 />
                 <button onClick={handleAddProduct}>Add Product</button>
             </section>
@@ -167,20 +198,27 @@ const Page = () => {
                     </section>
                     <section className={styles.ordersSection}>
                         <h2>Received Orders</h2>
-                        <ul>
-                            <ul className={styles.orderList}>
-                                {orders.map((order) => (
-                                    <li key={order._id} className={styles.orderCard}>
-                                        <img src={`${urls.API_BASE_URL}/images/${order.imageUrl}`}
-                                             alt={order.productName} className={styles.productImage}/>
-                                        <div>
-                                            <h3>{order.productName}</h3>
-                                            <p>Order ID: {order._id}</p>
-                                            <p>Quantity: {order.quantity}</p>
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
+                        <ul className={styles.orderList}>
+                            {orders.map((order) => (
+                                <li key={order._id} className={styles.orderCard}>
+                                    <img src={`${urls.API_BASE_URL}/images/${order.imageUrl}`} alt={order.productName} className={styles.productImage} />
+                                    <div>
+                                        <h3>{order.productName}</h3>
+                                        <p>Order ID: {order._id}</p>
+                                        <p>Quantity: {order.quantity}</p>
+                                        <select
+                                            value={orderStatus[order._id] || order.status}
+                                            onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                                        >
+                                            <option value="Pending">Pending</option>
+                                            <option value="Processing">Processing</option>
+                                            <option value="Shipped">Shipped</option>
+                                            <option value="Delivered">Delivered</option>
+                                        </select>
+                                        <button onClick={() => updateOrderStatus(order._id)}>Update Status</button>
+                                    </div>
+                                </li>
+                            ))}
                         </ul>
                     </section>
                 </>
@@ -196,7 +234,7 @@ const Page = () => {
                 />
             )}
             {showOrderSuccess && (
-                <OrderSuccessModal onClose={() => setShowOrderSuccess(false)}/>
+                <OrderSuccessModal onClose={() => setShowOrderSuccess(false)} />
             )}
             {showDeleteConfirm && (
                 <DualAnswerModal
@@ -212,7 +250,7 @@ const Page = () => {
 const App = () => (
     <AppProvider>
         <Layout>
-            <Page/>
+            <Page />
         </Layout>
     </AppProvider>
 );

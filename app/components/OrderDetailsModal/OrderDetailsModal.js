@@ -19,27 +19,23 @@ const OrderDetailsModal = ({ orderDetails, onClose }) => {
                             <p><strong>Delivery Address:</strong> {order.deliveryAddress}</p>
                             <p><strong>Order Date:</strong> {new Date(order.orderDate).toLocaleDateString()}</p>
                             <p><strong>Product Count:</strong> {order.productCount}</p>
-                            <p><strong>Status:</strong> {order.status}</p>
                             <p><strong>Products:</strong></p>
                             <ul>
                                 {order.productIds.map((product, idx) => {
+                                    console.log("DEBUG");
                                     console.log({product});
-                                    const productDetail = products.filter(p => {
-                                        console.log(p._id === product.productId);
-                                        return p._id === product.productId;
-                                    })[0];
-                                    console.log({productDetail});
                                     return (
                                         <li key={idx}>
-                                            {productDetail ? (
+                                            {product ? (
                                                 <div>
                                                     <img
-                                                        src={`${urls.API_BASE_URL}/images/${productDetail.imageUrl}`}
+                                                        src={`${urls.API_BASE_URL}/images/${product.imageUrl}`}
                                                         alt={product.name}
                                                         className={styles.productImage}
                                                     />
-                                                    <p>Product Name: {productDetail.name}</p>
+                                                    <p>Product Name: {product.name}</p>
                                                     <p>Quantity: {product.quantity}</p>
+                                                    <p>Status: {product.status}</p>
                                                 </div>
                                             ) : (
                                                 <p>Loading...</p>
