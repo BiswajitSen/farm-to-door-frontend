@@ -13,7 +13,7 @@ import DualAnswerModal from "@/app/components/DualAnsModal/DualAnswerModal.js";
 const Page = () => {
     const [products, setProducts] = useState([]);
     const [orders, setOrders] = useState([]);
-    const [newProduct, setNewProduct] = useState({ name: '', description: '', price: 0, quantity: 0, image: null });
+    const [newProduct, setNewProduct] = useState({ name: '', description: '', price: null, quantity: null, image: null });
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [showLoginPrompt, setShowLoginPrompt] = useState(false);
     const [showOrderSuccess, setShowOrderSuccess] = useState(false);

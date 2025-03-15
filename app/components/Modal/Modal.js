@@ -8,7 +8,7 @@ const Modal = ({ message, onClose }) => {
         <div className={styles.card}>
             <div className={styles.header}></div>
             <div className={styles.info}>
-                <p className={styles.title}>Alert Page</p>
+                <p className={styles.title}>Alert!!!</p>
                 <p>{message + ' !!!'}</p>
             </div>
             <div className={styles.footer}>
