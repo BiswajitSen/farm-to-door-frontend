@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import styles from '../../Layout.module.css';
 import ImageModal from '../ImageModal/ImageModal';
 import Modal from '../Modal/Modal';
 import urls from "@/env";
 
-const ProductList = ({ products, cart, onAddOne, onRemoveOne }) => {
+const ProductList = ({products, cart, onAddOne, onRemoveOne}) => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [modalMessage, setModalMessage] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const handleImageClick = (imageUrl) => {
-        setSelectedImage(imageUrl);
+    const handleImageClick = ({imageUrl, name, description}) => {
+        setSelectedImage({imageUrl, name, description});
     };
 
     const handleCloseModal = () => {
@@ -45,7 +45,11 @@ const ProductList = ({ products, cart, onAddOne, onRemoveOne }) => {
                         src={`${urls.API_BASE_URL}/images/${product.imageUrl}`}
                         alt={product.name}
                         className={styles.productImage}
-                        onClick={() => handleImageClick(`${urls.API_BASE_URL}/images/${product.imageUrl}`)}
+                        onClick={() => handleImageClick({
+                            imageUrl: `${urls.API_BASE_URL}/images/${product.imageUrl}`,
+                            name: product.name,
+                            description: product.description,
+                        })}
                     />
                     <div className={styles.productDetails}>
                         <div className={styles.productName}>{product.name}</div>
@@ -54,13 +58,17 @@ const ProductList = ({ products, cart, onAddOne, onRemoveOne }) => {
                     {product.quantity > 0 ? (
                         cart[product._id] ? (
                             <div className={styles.buttonGroup}>
-                                <button onClick={() => handleAddToCart(product._id)} className={styles.addButton}>+</button>
+                                <button onClick={() => handleAddToCart(product._id)} className={styles.addButton}>+
+                                </button>
                                 <div className={styles.quantityDisplay}>Selected: {cart[product._id]}</div>
-                                <button onClick={() => onRemoveOne(product._id)} className={styles.removeButton}>-</button>
+                                <button onClick={() => onRemoveOne(product._id)} className={styles.removeButton}>-
+                                </button>
                             </div>
                         ) : (
                             <div className={styles.buttonGroup}>
-                                <button onClick={() => handleAddToCart(product._id)} className={styles.addButton}>Add to Cart</button>
+                                <button onClick={() => handleAddToCart(product._id)} className={styles.addButton}>Add to
+                                    Cart
+                                </button>
                                 <div className={styles.quantityDisplay}>Available: {product.quantity}</div>
                             </div>
                         )
@@ -69,8 +77,15 @@ const ProductList = ({ products, cart, onAddOne, onRemoveOne }) => {
                     )}
                 </div>
             ))}
-            {selectedImage && <ImageModal imageUrl={selectedImage} onClose={handleCloseModal} />}
-            {isModalOpen && <Modal message={modalMessage} onClose={() => setIsModalOpen(false)} />}
+            {selectedImage &&
+                <ImageModal
+                    imageUrl={selectedImage.imageUrl}
+                    name={selectedImage.name}
+                    description={selectedImage.description}
+                    onClose={handleCloseModal}
+                />
+            }
+            {isModalOpen && <Modal message={modalMessage} onClose={() => setIsModalOpen(false)}/>}
         </div>
     );
 };
