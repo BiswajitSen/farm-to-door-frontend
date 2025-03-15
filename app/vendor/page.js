@@ -1,25 +1,25 @@
 "use client";
-
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import axios from 'axios';
-import { useRouter } from 'next/navigation';
+import {useRouter} from 'next/navigation';
 import styles from './VendorManagement.module.css';
-import { AppProvider } from "@/app/context.js";
+import {AppProvider} from "@/app/context.js";
 import Layout from "@/app/layout.js";
 import urls from "@/env";
-import OrderSuccessModal from "@/app/components/OrderSuccessModal/OrderSuccessModal.js";
 import DualAnswerModal from "@/app/components/DualAnsModal/DualAnswerModal.js";
+import Modal from "@/app/components/Modal/Modal.js";
 
 const Page = () => {
     const [products, setProducts] = useState([]);
     const [orders, setOrders] = useState([]);
-    const [newProduct, setNewProduct] = useState({ name: '', description: '', price: null, quantity: null, image: null });
+    const [newProduct, setNewProduct] = useState({name: '', description: '', price: null, quantity: null, image: null});
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [showLoginPrompt, setShowLoginPrompt] = useState(false);
     const [showOrderSuccess, setShowOrderSuccess] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [productToDelete, setProductToDelete] = useState(null);
     const [orderStatus, setOrderStatus] = useState({});
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
@@ -60,6 +60,9 @@ const Page = () => {
             return;
         }
 
+        setIsButtonDisabled(true);
+        setTimeout(() => setIsButtonDisabled(false), 5000); // Disable button for 5 seconds
+
         const username = localStorage.getItem('username');
         const authToken = localStorage.getItem('authToken');
         const formData = new FormData();
@@ -77,7 +80,7 @@ const Page = () => {
                 },
             });
             setProducts([...products, response.data]);
-            setNewProduct({ name: '', description: '', price: '', quantity: '', image: '' });
+            setNewProduct({name: '', description: '', price: 0, quantity: 0, image: null});
             setShowOrderSuccess(true);
         } catch (error) {
             console.error('Error adding product:', error);
@@ -157,31 +160,31 @@ const Page = () => {
                 <input
                     type="text"
                     placeholder="Product Name"
-                    value={newProduct.name}
+                    value={newProduct.name || ''}
                     onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
                 />
                 <textarea
                     placeholder="Product Description"
-                    value={newProduct.description}
+                    value={newProduct.description || ''}
                     onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
                 />
                 <input
                     type="number"
                     placeholder="Price"
-                    value={newProduct.price}
+                    value={newProduct.price || ''}
                     onChange={(e) => setNewProduct({ ...newProduct, price: parseFloat(e.target.value) })}
                 />
                 <input
                     type="number"
                     placeholder="Quantity"
-                    value={newProduct.quantity}
+                    value={newProduct.quantity || ''}
                     onChange={(e) => setNewProduct({ ...newProduct, quantity: parseInt(e.target.value) })}
                 />
                 <input
                     type="file"
                     onChange={(e) => setNewProduct({ ...newProduct, image: e.target.files[0] })}
                 />
-                <button onClick={handleAddProduct}>Add Product</button>
+                <button onClick={handleAddProduct} disabled={isButtonDisabled}>Add Product</button>
             </section>
             {isLoggedIn && (
                 <>
@@ -201,7 +204,8 @@ const Page = () => {
                         <ul className={styles.orderList}>
                             {orders.map((order) => (
                                 <li key={order._id} className={styles.orderCard}>
-                                    <img src={`${urls.API_BASE_URL}/images/${order.imageUrl}`} alt={order.productName} className={styles.productImage} />
+                                    <img src={`${urls.API_BASE_URL}/images/${order.imageUrl}`} alt={order.productName}
+                                         className={styles.productImage}/>
                                     <div>
                                         <h3>{order.productName}</h3>
                                         <p>Order ID: {order._id}</p>
@@ -231,10 +235,13 @@ const Page = () => {
                         setShowLoginPrompt(false);
                         router.push('/login');
                     }}
+                    buttonText={{confirm: "Login"}}
                 />
             )}
             {showOrderSuccess && (
-                <OrderSuccessModal onClose={() => setShowOrderSuccess(false)} />
+                <Modal
+                    message={"Order placed successfully!"}
+                    onClose={() => setShowOrderSuccess(false)}/>
             )}
             {showDeleteConfirm && (
                 <DualAnswerModal
@@ -250,7 +257,7 @@ const Page = () => {
 const App = () => (
     <AppProvider>
         <Layout>
-            <Page />
+            <Page/>
         </Layout>
     </AppProvider>
 );
