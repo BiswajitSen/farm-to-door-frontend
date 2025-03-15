@@ -6,7 +6,7 @@ import { AppProvider } from '@/app/context';
 import Layout from '@/app/layout.js';
 import styles from './LoginPage.module.css';
 import urls from '@/env';
-import LoginForm from "@/app/components/LoginForm/LoginForm";
+import LoginForm from "@/app/components/AuthForm/LoginForm";
 import Modal from "@/app/components/Modal/Modal";
 import Loader from "@/app/components/Loader/Loader";
 
@@ -60,7 +60,6 @@ const LoginPage = () => {
 
     return (
         <div className={styles.loginPage}>
-            <h1 className={styles.h1}>Login</h1>
             {error && <Modal message={error} onClose={closeModal} />}
             {loading && <Loader />}
             <LoginForm onLogin={handleLogin} />

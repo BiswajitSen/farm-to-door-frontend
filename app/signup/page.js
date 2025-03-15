@@ -6,7 +6,7 @@ import { AppProvider } from '@/app/context';
 import Layout from '@/app/layout.js';
 import styles from './SignupPage.module.css';
 import urls from '@/env';
-import SignupForm from "@/app/components/SignupForm/SignupForm";
+import SignupForm from "@/app/components/AuthForm/SignupForm.js";
 import Modal from "@/app/components/Modal/Modal";
 import Loader from "@/app/components/Loader/Loader";
 
@@ -18,7 +18,7 @@ const SignupPage = () => {
 
     const handleSignup = async ({ username, password }) => {
         setLoading(true);
-        const minLoadingTime = new Promise(resolve => setTimeout(resolve, 2000));
+        const minLoadingTime = await new Promise(resolve => setTimeout(resolve, 2000));
         try {
             const response = await fetch(`${urls.API_BASE_URL}/signup`, {
                 method: 'POST',
@@ -48,8 +48,7 @@ const SignupPage = () => {
     };
 
     return (
-        <div className={styles.loginPage}>
-            <h1 className={styles.h1}>Signup</h1>
+        <div className={styles.signUpPage}>
             {error && <Modal message={error} onClose={closeModal} />}
             {showRedirectMessage && <Modal message="Signup successful! Redirecting to login page..." onClose={() => setShowRedirectMessage(false)} />}
             {loading && <Loader />}
