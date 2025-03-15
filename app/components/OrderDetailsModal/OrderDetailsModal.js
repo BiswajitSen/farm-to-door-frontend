@@ -1,31 +1,32 @@
-// OrderDetailsModal.js
-import React, {useContext, useEffect, useState} from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import styles from './OrderDetailsModal.module.css';
 import urls from '@/env';
-import {useAppContext} from "@/app/context";
+import EmptyCart from '@/app/components/EmptyCart/EmptyCart';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
 const OrderDetailsModal = ({ orderDetails, onClose }) => {
-    const {products} = useAppContext();
-
     return (
         <div className={styles.modalOverlay}>
             <div className={styles.modal}>
                 <h2>Order Details</h2>
-                <button onClick={onClose} className={styles.closeButton}>X</button>
+                <button onClick={onClose} className={styles.closeButton}>
+                    <FontAwesomeIcon icon={faTimes} />
+                </button>
                 <div className={styles.orderList}>
-                    {orderDetails.map((order, index) => (
-                        <div key={index} className={styles.orderCard}>
-                            <p><strong>Delivery Address:</strong> {order.deliveryAddress}</p>
-                            <p><strong>Order Date:</strong> {new Date(order.orderDate).toLocaleDateString()}</p>
-                            <p><strong>Product Count:</strong> {order.productCount}</p>
-                            <p><strong>Products:</strong></p>
-                            <ul>
-                                {order.productIds.map((product, idx) => {
-                                    console.log("DEBUG");
-                                    console.log({product});
-                                    return (
-                                        <li key={idx}>
+                    {orderDetails.length === 0 ? (
+                        <EmptyCart />
+                    ) : (
+                        orderDetails.map((order, index) => (
+                            <div key={index} className={styles.orderCard}>
+                                <p><strong>Delivery Address:</strong> {order.deliveryAddress}</p>
+                                <p><strong>Order Date:</strong> {new Date(order.orderDate).toLocaleDateString()}</p>
+                                <p><strong>Product Count:</strong> {order.productCount}</p>
+                                <p><strong>Products:</strong></p>
+                                <ul>
+                                    {order.productIds.map((product, idx) => (
+                                        <li key={idx} className={styles.productCard}>
                                             {product ? (
                                                 <div>
                                                     <img
@@ -41,11 +42,11 @@ const OrderDetailsModal = ({ orderDetails, onClose }) => {
                                                 <p>Loading...</p>
                                             )}
                                         </li>
-                                    );
-                                })}
-                            </ul>
-                        </div>
-                    ))}
+                                    ))}
+                                </ul>
+                            </div>
+                        ))
+                    )}
                 </div>
             </div>
         </div>
@@ -59,7 +60,10 @@ OrderDetailsModal.propTypes = {
         productCount: PropTypes.number.isRequired,
         productIds: PropTypes.arrayOf(PropTypes.shape({
             id: PropTypes.string.isRequired,
-            quantity: PropTypes.number.isRequired
+            quantity: PropTypes.number.isRequired,
+            imageUrl: PropTypes.string.isRequired,
+            name: PropTypes.string.isRequired,
+            status: PropTypes.string.isRequired
         })).isRequired,
         status: PropTypes.string.isRequired,
     })).isRequired,
