@@ -21,7 +21,7 @@ export const useFetchProducts = () => {
 };
 
 export const useHandleOrderSubmit = () => {
-    const { setError, setSuccess } = useAppContext();
+    const { setError } = useAppContext();
 
     const handleOrderSubmit = async (orderReq) => {
         if (!orderReq.address) {
@@ -48,12 +48,14 @@ export const useHandleOrderSubmit = () => {
                     'Authorization': `Bearer ${authToken}`
                 }
             });
-            setSuccess('Order placed successfully');
-            setError('');
+            if(response.status === 201) {
+                return Promise.resolve(true);
+            } else {
+                return Promise.resolve(false);
+            }
         } catch (err) {
             console.error('Error placing order:', err);
-            setError('Failed to place order');
-            setSuccess('');
+            return new Promise.resolve(false);
         }
     };
 

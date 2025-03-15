@@ -96,7 +96,7 @@ const HomePage = () => {
         setIsModalOpen(false);
     };
 
-    const handleOrderSubmitWithPrompt = async (orderReq) => {
+    const handleOrderSubmitWithPrompt = async (orderReq, setError) => {
         const authToken = localStorage.getItem('authToken');
         const updatedOrderReq = {
             ...orderReq,
@@ -109,13 +109,16 @@ const HomePage = () => {
                 };
             })
         };
-        await handleOrderSubmit(updatedOrderReq);
-        setOrderPlacedSuccessfully(true);
-        setCart({});
+        if(await handleOrderSubmit(updatedOrderReq)) {
+            setOrderPlacedSuccessfully(true);
+            setCart({});
+        } else {
+            setError('Failed to place order');
+        }
         setTimeout(() => {
             setOrderPlacedSuccessfully(false);
             handleCloseModal();
-        }, 3000);
+        }, 2500);
 
         try {
             const response = await axios.get(`${urls.API_BASE_URL}/products`, {
@@ -265,7 +268,6 @@ const HomePage = () => {
             </div>
             {isModalOpen && (
                 <OrderForm
-                    address={address}
                     setAddress={setAddress}
                     onSubmit={handleOrderSubmitWithPrompt}
                     onClose={handleCloseModal}
