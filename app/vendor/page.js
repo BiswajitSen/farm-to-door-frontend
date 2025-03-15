@@ -77,7 +77,7 @@ const Page = () => {
                 },
             });
             setProducts([...products, response.data]);
-            setNewProduct({ name: '', description: '', price: 0, quantity: 0, image: null });
+            setNewProduct({ name: '', description: '', price: '', quantity: '', image: '' });
             setShowOrderSuccess(true);
         } catch (error) {
             console.error('Error adding product:', error);
@@ -140,7 +140,7 @@ const Page = () => {
                     }
                 }
             );
-            fetchVendorData();
+            await fetchVendorData();
         } catch (error) {
             console.error('Error updating order status:', error);
         }

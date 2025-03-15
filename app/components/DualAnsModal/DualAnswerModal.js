@@ -8,8 +8,8 @@ const DualAnswerModal = ({ message, onConfirm, onCancel, buttonText}) => {
             <div className={styles.modalContent}>
                 <p className={styles.message}>{message}</p>
                 <div className={styles.buttonGroup}>
-                    <button onClick={onConfirm} className={styles.confirmButton}>{buttonText.confirm || "Confirm"}</button>
-                    <button onClick={onCancel} className={styles.cancelButton}>{buttonText.cancel || "Cancel"}</button>
+                    <button onClick={onConfirm} className={styles.confirmButton}>{buttonText?.confirm || "Confirm"}</button>
+                    <button onClick={onCancel} className={styles.cancelButton}>{buttonText?.cancel || "Cancel"}</button>
                 </div>
             </div>
         </div>
