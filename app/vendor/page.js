@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import styles from './VendorManagement.module.css';
-import { AppProvider } from "@/app/context.js";
 import Layout from "@/app/components/Layout/layout.js";
 import urls from "@/env";
 import LoginPromptModal from "@/app/components/LoginPromptModal/LoginPromptModal.js";
@@ -31,40 +30,78 @@ const Page = () => {
         const username = localStorage.getItem('username');
         const authToken = localStorage.getItem('authToken');
 
-        try {
-            const productsResponse = await axios.get(`${urls.API_BASE_URL}/vendor/products?username=${username}`, {
-                headers: {
-                    'Authorization': `Bearer ${authToken}`
-                }
-            });
-            const ordersResponse = await axios.get(`${urls.API_BASE_URL}/vendor/orders?username=${username}`, {
-                headers: {
-                    'Authorization': `Bearer ${authToken}`
-                }
-            });
+        if (!username || !authToken) {
+            console.error('Missing authentication credentials');
+            return;
+        }
 
-            setProducts(productsResponse.data);
-            setOrders(ordersResponse.data);
+        try {
+            const [productsResponse, ordersResponse] = await Promise.all([
+                axios.get(`${urls.API_BASE_URL}/vendor/products?username=${username}`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                }),
+                axios.get(`${urls.API_BASE_URL}/vendor/orders?username=${username}`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                })
+            ]);
+
+            setProducts(productsResponse.data || []);
+            setOrders(ordersResponse.data || []);
         } catch (error) {
             console.error('Error fetching vendor data:', error);
+            // Set empty arrays on error to prevent undefined errors
+            setProducts([]);
+            setOrders([]);
         }
     };
 
     const handleAddProduct = async () => {
         if (!isLoggedIn) {
-            localStorage.setItem('redirectAfterLogin', window.location.pathname);
+            try {
+                localStorage.setItem('redirectAfterLogin', window.location.pathname);
+            } catch (error) {
+                console.error('Error saving redirect path:', error);
+            }
             setShowLoginPrompt(true);
+            return;
+        }
+
+        // Validation
+        if (!newProduct.name?.trim()) {
+            alert('Product name is required');
+            return;
+        }
+
+        if (newProduct.price <= 0) {
+            alert('Price must be greater than 0');
+            return;
+        }
+
+        if (newProduct.quantity < 0) {
+            alert('Quantity cannot be negative');
             return;
         }
 
         const username = localStorage.getItem('username');
         const authToken = localStorage.getItem('authToken');
+
+        if (!username || !authToken) {
+            alert('Authentication required. Please login again.');
+            return;
+        }
+
         const formData = new FormData();
-        formData.append('name', newProduct.name);
-        formData.append('description', newProduct.description);
+        formData.append('name', newProduct.name.trim());
+        formData.append('description', newProduct.description?.trim() || '');
         formData.append('price', newProduct.price);
         formData.append('quantity', newProduct.quantity);
-        formData.append('image', newProduct.image);
+        if (newProduct.image) {
+            formData.append('image', newProduct.image);
+        }
 
         try {
             const response = await axios.post(`${urls.API_BASE_URL}/vendor/addProducts?username=${username}`, formData, {
@@ -73,11 +110,16 @@ const Page = () => {
                     'Authorization': `Bearer ${authToken}`
                 },
             });
-            setProducts([...products, response.data]);
-            setNewProduct({ name: '', description: '', price: 0, quantity: 0, image: null });
-            setShowOrderSuccess(true);
+            
+            if (response.data) {
+                setProducts([...products, response.data]);
+                setNewProduct({ name: '', description: '', price: 0, quantity: 0, image: null });
+                setShowOrderSuccess(true);
+            }
         } catch (error) {
             console.error('Error adding product:', error);
+            const errorMessage = error.response?.data?.message || 'Failed to add product';
+            alert(errorMessage);
         }
     };
 
@@ -105,14 +147,23 @@ const Page = () => {
                 <input
                     type="number"
                     placeholder="Price"
-                    value={newProduct.price}
-                    onChange={(e) => setNewProduct({ ...newProduct, price: parseFloat(e.target.value) })}
+                    value={newProduct.price || ''}
+                    onChange={(e) => {
+                        const value = parseFloat(e.target.value);
+                        setNewProduct({ ...newProduct, price: isNaN(value) ? 0 : value });
+                    }}
+                    min="0"
+                    step="0.01"
                 />
                 <input
                     type="number"
                     placeholder="Quantity"
-                    value={newProduct.quantity}
-                    onChange={(e) => setNewProduct({ ...newProduct, quantity: parseInt(e.target.value) })}
+                    value={newProduct.quantity || ''}
+                    onChange={(e) => {
+                        const value = parseInt(e.target.value);
+                        setNewProduct({ ...newProduct, quantity: isNaN(value) ? 0 : Math.max(0, value) });
+                    }}
+                    min="0"
                 />
                 <input
                     type="file"
@@ -134,19 +185,23 @@ const Page = () => {
                     </section>
                     <section className={styles.ordersSection}>
                         <h2>Received Orders</h2>
-                        <ul >
-                            <ul className={styles.orderList}>
-                                {orders.map((order) => (
-                                    <li key={order._id} className={styles.orderCard}>
-                                        <img src={`${urls.API_BASE_URL}/images/${order.imageUrl}`} alt={order.productName} className={styles.productImage} />
-                                        <div>
-                                            <h3>{order.productName}</h3>
-                                            <p>Order ID: {order._id}</p>
-                                            <p>Quantity: {order.quantity}</p>
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
+                        <ul className={styles.orderList}>
+                            {orders.map((order) => (
+                                <li key={order._id} className={styles.orderCard}>
+                                    {order.imageUrl && (
+                                        <img 
+                                            src={`${urls.API_BASE_URL}/images/${order.imageUrl}`} 
+                                            alt={order.productName || 'Product'} 
+                                            className={styles.productImage} 
+                                        />
+                                    )}
+                                    <div>
+                                        <h3>{order.productName || 'Unknown Product'}</h3>
+                                        <p>Order ID: {order._id}</p>
+                                        <p>Quantity: {order.quantity || 0}</p>
+                                    </div>
+                                </li>
+                            ))}
                         </ul>
                     </section>
                 </>
@@ -164,12 +219,10 @@ const Page = () => {
     );
 };
 
-const App = () => (
-    <AppProvider>
+export default function App() {
+    return (
         <Layout>
             <Page />
         </Layout>
-    </AppProvider>
-);
-
-export default App;
+    );
+}

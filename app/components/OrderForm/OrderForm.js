@@ -6,34 +6,50 @@ const OrderForm = ({ address, setAddress, onSubmit, onClose, selectedProducts, c
     const [error, setError] = useState('');
     const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
 
         if (selectedProducts.length === 0) {
             setError('At least one product must be selected');
             return;
         }
 
-        if (!address || address.length < 10) {
-            setError('Invalid address');
+        const trimmedAddress = address?.trim();
+        if (!trimmedAddress || trimmedAddress.length < 10) {
+            setError('Please enter a valid address (at least 10 characters)');
+            return;
+        }
+
+        // Validate that all products have valid quantities
+        const invalidProducts = selectedProducts.filter(product => {
+            const quantity = cart[product._id];
+            return !quantity || quantity <= 0;
+        });
+
+        if (invalidProducts.length > 0) {
+            setError('All products must have a valid quantity');
             return;
         }
 
         const orderReq = {
-            address,
-            products: selectedProducts.map(product => {
-                return {
-                    productId: product._id,
-                    name: product.productName,
-                    imageUrl: product.imageUrl,
-                    quantity: cart[product._id],
-                    boughtFrom: product.soldBy
-                }
-            })
+            address: trimmedAddress,
+            products: selectedProducts.map(product => ({
+                productId: product._id,
+                name: product.productName || product.name,
+                imageUrl: product.imageUrl,
+                quantity: cart[product._id],
+                boughtFrom: product.soldBy
+            }))
         };
 
         setIsSubmitDisabled(true);
-        onSubmit(orderReq);
+        try {
+            await onSubmit(orderReq);
+        } catch (error) {
+            setError(error.message || 'Failed to submit order');
+            setIsSubmitDisabled(false);
+        }
     };
 
     const totalItems = selectedProducts.reduce((acc, product) => acc + cart[product._id], 0);
@@ -61,14 +77,36 @@ const OrderForm = ({ address, setAddress, onSubmit, onClose, selectedProducts, c
                 </div>
                 {error && <div className={styles.errorMessage}>{error}</div>}
                 <form onSubmit={handleSubmit}>
+                    <label htmlFor="delivery-address" className={styles.label}>
+                        Delivery Address:
+                    </label>
                     <input
+                        id="delivery-address"
                         type="text"
                         value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                        placeholder="Enter your address"
-                        className={`${styles.input} ${error && !address ? styles.inputError : ''}`}
+                        onChange={(e) => {
+                            setAddress(e.target.value);
+                            setError(''); // Clear error when user starts typing
+                        }}
+                        placeholder="Enter your delivery address (minimum 10 characters)"
+                        className={`${styles.input} ${error && !address?.trim() ? styles.inputError : ''}`}
+                        required
+                        minLength={10}
+                        aria-invalid={error && !address?.trim()}
+                        aria-describedby={error && !address?.trim() ? 'address-error' : undefined}
                     />
-                    <button type="submit" className={styles.submitButton} disabled={isSubmitDisabled}>Submit Order</button>
+                    {error && !address?.trim() && (
+                        <span id="address-error" className={styles.errorText} role="alert">
+                            {error}
+                        </span>
+                    )}
+                    <button 
+                        type="submit" 
+                        className={styles.submitButton} 
+                        disabled={isSubmitDisabled || !address?.trim() || address.trim().length < 10}
+                    >
+                        {isSubmitDisabled ? 'Submitting...' : 'Submit Order'}
+                    </button>
                 </form>
                 <button onClick={onClose} className={styles.closeButton}>X</button>
             </div>

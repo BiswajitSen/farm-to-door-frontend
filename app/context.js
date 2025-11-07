@@ -1,5 +1,4 @@
-
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useMemo } from 'react';
 
 const AppContext = createContext();
 
@@ -11,24 +10,32 @@ export const AppProvider = ({ children }) => {
     const [selectedProducts, setSelectedProducts] = useState([]);
     const [address, setAddress] = useState('');
 
+    const contextValue = useMemo(() => ({
+        products,
+        setProducts,
+        loading,
+        setLoading,
+        error,
+        setError,
+        success,
+        setSuccess,
+        selectedProducts,
+        setSelectedProducts,
+        address,
+        setAddress
+    }), [products, loading, error, success, selectedProducts, address]);
+
     return (
-        <AppContext.Provider value={{
-            products,
-            setProducts,
-            loading,
-            setLoading,
-            error,
-            setError,
-            success,
-            setSuccess,
-            selectedProducts,
-            setSelectedProducts,
-            address,
-            setAddress
-        }}>
+        <AppContext.Provider value={contextValue}>
             {children}
         </AppContext.Provider>
     );
 };
 
-export const useAppContext = () => useContext(AppContext);
+export const useAppContext = () => {
+    const context = useContext(AppContext);
+    if (!context) {
+        throw new Error('useAppContext must be used within an AppProvider');
+    }
+    return context;
+};

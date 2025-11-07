@@ -12,11 +12,7 @@ const LoginForm = ({ onLogin }) => {
 
     const handleSignupRedirect = (e) => {
         e.preventDefault();
-        setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
-            router.push('/signup');
-        }, 2000);
+        router.push('/signup');
     };
 
     const handleSubmit = (e) => {
@@ -48,8 +44,10 @@ const LoginForm = ({ onLogin }) => {
                     className={styles.inputField}
                 />
             </div>
-            <button type="submit" className={styles.submitButton} onChange={handleSubmit}>Login</button>
-            {loading && <Loader />} {/* Show loader when loading */}
+            <button type="submit" className={styles.submitButton} disabled={loading}>
+                {loading ? 'Logging in...' : 'Login'}
+            </button>
+            {loading && <Loader />}
             <button onClick={handleSignupRedirect} className={styles.signupButton}>
                 Signup
             </button>

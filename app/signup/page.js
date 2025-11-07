@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { AppProvider } from '@/app/context';
 import Layout from '@/app/components/Layout/layout';
 import styles from './SignupPage.module.css';
 import urls from '@/env';
@@ -17,27 +16,51 @@ const SignupPage = () => {
     const router = useRouter();
 
     const handleSignup = async ({ username, password }) => {
+        if (!username?.trim() || !password?.trim()) {
+            setError('Username and password are required');
+            return;
+        }
+
+        if (password.trim().length < 6) {
+            setError('Password must be at least 6 characters long');
+            return;
+        }
+
         setLoading(true);
-        const minLoadingTime = new Promise(resolve => setTimeout(resolve, 2000));
+        setError('');
+        setShowRedirectMessage(false);
+        
         try {
             const response = await fetch(`${urls.API_BASE_URL}/signup`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username, password }),
+                body: JSON.stringify({ 
+                    username: username.trim(), 
+                    password: password.trim() 
+                }),
             });
 
             if (response.ok) {
                 setShowRedirectMessage(true);
-                await minLoadingTime;
-                router.push('/login');
+                // Redirect after a short delay to show success message
+                setTimeout(() => {
+                    router.push('/login');
+                }, 1500);
             } else {
-                const errorData = await response.json();
-                setError(errorData.message || 'Signup failed');
+                let errorMessage = 'Signup failed';
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.message || errorMessage;
+                } catch (parseError) {
+                    console.error('Error parsing error response:', parseError);
+                }
+                setError(errorMessage);
             }
         } catch (error) {
-            setError('An error occurred. Please try again.');
+            console.error('Signup error:', error);
+            setError('Network error. Please check your connection and try again.');
         } finally {
             setLoading(false);
         }
@@ -58,12 +81,10 @@ const SignupPage = () => {
     );
 };
 
-const App = () => (
-    <AppProvider>
+export default function App() {
+    return (
         <Layout>
             <SignupPage />
         </Layout>
-    </AppProvider>
-);
-
-export default App;
+    );
+}

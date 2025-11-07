@@ -32,29 +32,48 @@ const HomePage = () => {
     const [isBlinking, setIsBlinking] = useState(false);
     const [orderPlacedSuccessfully, setOrderPlacedSuccessfully] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [loadingLogin, setLoadingLogin] = useState(false);
-    const [loadingLogout, setLoadingLogout] = useState(false);
-    const [loadingSignup, setLoadingSignup] = useState(false);
     const [showLoginPrompt, setShowLoginPrompt] = useState(false);
     const [loadingOrder, setLoadingOrder] = useState(false);
     const [orderDetails, setOrderDetails] = useState(null);
     const router = useRouter();
 
     useEffect(() => {
-        const token = localStorage.getItem('authToken');
-        const storedUserName = localStorage.getItem('username');
-        setIsLoggedIn(!!token);
-        if (token) {
-            const savedCart = JSON.parse(localStorage.getItem('cart')) || {};
-            setCart(savedCart);
+        try {
+            const token = localStorage.getItem('authToken');
+            setIsLoggedIn(!!token);
+            if (token) {
+                const savedCartStr = localStorage.getItem('cart');
+                if (savedCartStr) {
+                    try {
+                        const savedCart = JSON.parse(savedCartStr);
+                        setCart(savedCart);
+                    } catch (parseError) {
+                        console.error('Error parsing saved cart:', parseError);
+                        localStorage.removeItem('cart');
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error accessing localStorage:', error);
         }
     }, []);
 
     const handleAddOne = (productId) => {
-        setCart(prevCart => ({
-            ...prevCart,
-            [productId]: (prevCart[productId] || 0) + 1
-        }));
+        setCart(prevCart => {
+            const newCart = {
+                ...prevCart,
+                [productId]: (prevCart[productId] || 0) + 1
+            };
+            // Persist cart to localStorage if logged in
+            if (isLoggedIn) {
+                try {
+                    localStorage.setItem('cart', JSON.stringify(newCart));
+                } catch (error) {
+                    console.error('Error saving cart to localStorage:', error);
+                }
+            }
+            return newCart;
+        });
         setIsBlinking(true);
     };
 
@@ -65,6 +84,14 @@ const HomePage = () => {
                 newCart[productId] -= 1;
             } else {
                 delete newCart[productId];
+            }
+            // Persist cart to localStorage if logged in
+            if (isLoggedIn) {
+                try {
+                    localStorage.setItem('cart', JSON.stringify(newCart));
+                } catch (error) {
+                    console.error('Error saving cart to localStorage:', error);
+                }
             }
             return newCart;
         });
@@ -79,7 +106,11 @@ const HomePage = () => {
 
     const handleOpenModal = () => {
         if (!isLoggedIn) {
-            localStorage.setItem('cart', JSON.stringify(cart));
+            try {
+                localStorage.setItem('cart', JSON.stringify(cart));
+            } catch (error) {
+                console.error('Error saving cart to localStorage:', error);
+            }
             setShowLoginPrompt(true);
         } else {
             setIsModalOpen(true);
@@ -91,65 +122,80 @@ const HomePage = () => {
     };
 
     const handleOrderSubmitWithPrompt = async (orderReq) => {
-        const authToken = localStorage.getItem('authToken');
-        const updatedOrderReq = {
-            ...orderReq,
-            products: orderReq.products.map(product => {
-                const productDetails = products.find(p => p._id === product.productId);
-                return {
-                    ...product,
-                    imageUrl: productDetails.imageUrl,
-                    productName: productDetails.name
-                };
-            })
-        };
-        await handleOrderSubmit(updatedOrderReq);
-        setOrderPlacedSuccessfully(true);
-        setCart({});
-        setTimeout(() => {
-            setOrderPlacedSuccessfully(false);
-            handleCloseModal();
-        }, 3000);
-
-        // Fetch updated product data
         try {
-            const response = await axios.get(`${urls.API_BASE_URL}/products`, {
-                headers: {
-                    'Authorization': `Bearer ${authToken}`
-                }
-            });
-            setProducts(response.data);
+            const authToken = localStorage.getItem('authToken');
+            const updatedOrderReq = {
+                ...orderReq,
+                products: orderReq.products.map(product => {
+                    const productDetails = products.find(p => p._id === product.productId);
+                    if (!productDetails) {
+                        throw new Error(`Product ${product.productId} not found`);
+                    }
+                    return {
+                        ...product,
+                        imageUrl: productDetails.imageUrl,
+                        productName: productDetails.name
+                    };
+                })
+            };
+            
+            await handleOrderSubmit(updatedOrderReq);
+            setOrderPlacedSuccessfully(true);
+            setCart({});
+            
+            // Clear cart from localStorage
+            try {
+                localStorage.removeItem('cart');
+            } catch (error) {
+                console.error('Error clearing cart from localStorage:', error);
+            }
+
+            // Fetch updated product data
+            try {
+                const response = await axios.get(`${urls.API_BASE_URL}/products`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                setProducts(response.data);
+            } catch (error) {
+                console.error('Error fetching updated product data:', error);
+            }
+
+            // Auto-close modal after showing success message
+            setTimeout(() => {
+                setOrderPlacedSuccessfully(false);
+                handleCloseModal();
+            }, 3000);
         } catch (error) {
-            console.error('Error fetching updated product data:', error);
+            console.error('Error submitting order:', error);
+            setError(error.message || 'Failed to submit order');
         }
     };
 
     const handleLogout = () => {
-        setLoadingLogout(true);
-        setTimeout(() => {
+        try {
             localStorage.removeItem('authToken');
             localStorage.removeItem('username');
             localStorage.removeItem('cart');
             setIsLoggedIn(false);
-            setLoadingLogout(false);
+            setCart({});
             router.push('/');
-        }, 3000);
+        } catch (error) {
+            console.error('Error during logout:', error);
+            // Still proceed with logout even if localStorage fails
+            setIsLoggedIn(false);
+            setCart({});
+            router.push('/');
+        }
     };
 
     const handleLoginRedirect = () => {
-        setLoadingLogin(true);
-        setTimeout(() => {
-            setLoadingLogin(false);
-            router.push('/login');
-        }, 3000);
+        router.push('/login');
     };
 
     const handleSignupRedirect = () => {
-        setLoadingSignup(true);
-        setTimeout(() => {
-            setLoadingSignup(false);
-            router.push('/signup');
-        }, 3000);
+        router.push('/signup');
     };
 
     const handleVendorRedirect = () => {
@@ -158,7 +204,11 @@ const HomePage = () => {
 
     const handleFetchOrderDetails = async () => {
         if (!isLoggedIn) {
-            localStorage.setItem('cart', JSON.stringify(cart));
+            try {
+                localStorage.setItem('cart', JSON.stringify(cart));
+            } catch (error) {
+                console.error('Error saving cart to localStorage:', error);
+            }
             setShowLoginPrompt(true);
             return;
         }
@@ -167,8 +217,13 @@ const HomePage = () => {
         const authToken = localStorage.getItem('authToken');
         const username = localStorage.getItem('username');
 
+        if (!authToken || !username) {
+            setError('Authentication required. Please login again.');
+            setLoadingOrder(false);
+            return;
+        }
+
         try {
-            await new Promise(resolve => setTimeout(resolve, 2000));
             const response = await axios.get(`${urls.API_BASE_URL}/orders`, {
                 headers: {
                     'Authorization': `Bearer ${authToken}`
@@ -178,9 +233,12 @@ const HomePage = () => {
                 }
             });
             setOrderDetails(response.data);
+            setError(null);
         } catch (error) {
             console.error('Error fetching order details:', error);
-            setError('Failed to fetch order details');
+            const errorMessage = error.response?.data?.message || 'Failed to fetch order details';
+            setError(errorMessage);
+            setOrderDetails(null);
         } finally {
             setLoadingOrder(false);
         }
@@ -223,7 +281,6 @@ const HomePage = () => {
                 </div>
             </header>
 
-            {(loadingLogin || loadingLogout || loadingSignup) && <Loader />}
 
             {showLoginPrompt && (
                 <LoginPromptModal
@@ -286,12 +343,10 @@ const HomePage = () => {
     );
 };
 
-const App = () => (
-    <AppProvider>
+export default function App() {
+    return (
         <Layout>
             <HomePage />
         </Layout>
-    </AppProvider>
-);
-
-export default App;
+    );
+}

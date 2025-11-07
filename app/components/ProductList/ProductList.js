@@ -20,13 +20,31 @@ const ProductList = ({ products, cart, onAddOne, onRemoveOne }) => {
 
     const handleAddToCart = (productId) => {
         const product = products.find(p => p._id === productId);
+        
+        if (!product) {
+            setModalMessage('Product not found');
+            setIsModalOpen(true);
+            return;
+        }
+
+        if (product.quantity === 0) {
+            setModalMessage('This product is sold out');
+            setIsModalOpen(true);
+            return;
+        }
+
         if (!cart[productId] || cart[productId] < product.quantity) {
             const productElement = document.getElementById(`product-${productId}`);
-            productElement.classList.add(styles.moving);
-            setTimeout(() => {
-                productElement.classList.remove(styles.moving);
+            if (productElement) {
+                productElement.classList.add(styles.moving);
+                setTimeout(() => {
+                    productElement.classList.remove(styles.moving);
+                    onAddOne(productId);
+                }, 1000);
+            } else {
+                // Fallback if element not found
                 onAddOne(productId);
-            }, 1000);
+            }
         } else {
             setModalMessage('Cannot add more than available quantity');
             setIsModalOpen(true);
@@ -46,6 +64,10 @@ const ProductList = ({ products, cart, onAddOne, onRemoveOne }) => {
                         alt={product.name}
                         className={styles.productImage}
                         onClick={() => handleImageClick(`${urls.API_BASE_URL}/images/${product.imageUrl}`)}
+                        onError={(e) => {
+                            e.target.src = '/placeholder-image.png'; // Fallback image
+                        }}
+                        loading="lazy"
                     />
                     <div className={styles.productDetails}>
                         <div className={styles.productName}>{product.name}</div>

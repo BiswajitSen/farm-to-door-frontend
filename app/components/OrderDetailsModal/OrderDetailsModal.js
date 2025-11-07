@@ -1,55 +1,85 @@
 // OrderDetailsModal.js
-import React, {useContext, useEffect, useState} from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import styles from './OrderDetailsModal.module.css';
 import urls from '@/env';
-import {useAppContext} from "@/app/context";
+import { useAppContext } from "@/app/context";
 
 const OrderDetailsModal = ({ orderDetails, onClose }) => {
-    const {products} = useAppContext();
+    const { products } = useAppContext();
+
+    if (!orderDetails || orderDetails.length === 0) {
+        return (
+            <div className={styles.modalOverlay}>
+                <div className={styles.modal}>
+                    <h2>Order Details</h2>
+                    <button onClick={onClose} className={styles.closeButton} aria-label="Close">X</button>
+                    <p>No orders found.</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <div className={styles.modalOverlay}>
-            <div className={styles.modal}>
+        <div className={styles.modalOverlay} onClick={onClose}>
+            <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
                 <h2>Order Details</h2>
-                <button onClick={onClose} className={styles.closeButton}>X</button>
+                <button 
+                    onClick={onClose} 
+                    className={styles.closeButton}
+                    aria-label="Close modal"
+                >
+                    X
+                </button>
                 <div className={styles.orderList}>
-                    {orderDetails.map((order, index) => (
-                        <div key={index} className={styles.orderCard}>
-                            <p><strong>Delivery Address:</strong> {order.deliveryAddress}</p>
-                            <p><strong>Order Date:</strong> {new Date(order.orderDate).toLocaleDateString()}</p>
-                            <p><strong>Product Count:</strong> {order.productCount}</p>
-                            <p><strong>Status:</strong> {order.status}</p>
-                            <p><strong>Products:</strong></p>
-                            <ul>
-                                {order.productIds.map((product, idx) => {
-                                    console.log({product});
-                                    const productDetail = products.filter(p => {
-                                        console.log(p._id === product.productId);
-                                        return p._id === product.productId;
-                                    })[0];
-                                    console.log({productDetail});
-                                    return (
-                                        <li key={idx}>
-                                            {productDetail ? (
-                                                <div>
-                                                    <img
-                                                        src={`${urls.API_BASE_URL}/images/${productDetail.imageUrl}`}
-                                                        alt={product.name}
-                                                        className={styles.productImage}
-                                                    />
-                                                    <p>Product Name: {productDetail.name}</p>
-                                                    <p>Quantity: {product.quantity}</p>
-                                                </div>
-                                            ) : (
-                                                <p>Loading...</p>
-                                            )}
-                                        </li>
-                                    );
-                                })}
-                            </ul>
-                        </div>
-                    ))}
+                    {orderDetails.map((order, index) => {
+                        const orderDate = order.orderDate 
+                            ? new Date(order.orderDate).toLocaleDateString() 
+                            : 'Date not available';
+                        
+                        return (
+                            <div key={order._id || index} className={styles.orderCard}>
+                                <p><strong>Delivery Address:</strong> {order.deliveryAddress || 'Not specified'}</p>
+                                <p><strong>Order Date:</strong> {orderDate}</p>
+                                <p><strong>Product Count:</strong> {order.productCount || 0}</p>
+                                <p><strong>Status:</strong> {order.status || 'Unknown'}</p>
+                                {order.productIds && order.productIds.length > 0 ? (
+                                    <>
+                                        <p><strong>Products:</strong></p>
+                                        <ul>
+                                            {order.productIds.map((product, idx) => {
+                                                const productDetail = products.find(p => p._id === product.productId);
+                                                return (
+                                                    <li key={product.productId || idx}>
+                                                        {productDetail ? (
+                                                            <div>
+                                                                {productDetail.imageUrl && (
+                                                                    <img
+                                                                        src={`${urls.API_BASE_URL}/images/${productDetail.imageUrl}`}
+                                                                        alt={productDetail.name || 'Product'}
+                                                                        className={styles.productImage}
+                                                                        onError={(e) => {
+                                                                            e.target.style.display = 'none';
+                                                                        }}
+                                                                    />
+                                                                )}
+                                                                <p>Product Name: {productDetail.name || 'Unknown Product'}</p>
+                                                                <p>Quantity: {product.quantity || 0}</p>
+                                                            </div>
+                                                        ) : (
+                                                            <p>Product information not available</p>
+                                                        )}
+                                                    </li>
+                                                );
+                                            })}
+                                        </ul>
+                                    </>
+                                ) : (
+                                    <p>No products in this order.</p>
+                                )}
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
         </div>

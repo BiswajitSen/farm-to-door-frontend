@@ -16,22 +16,43 @@ const LoginPage = () => {
     const router = useRouter();
 
     const handleLogin = async ({ username, password }) => {
+        if (!username?.trim() || !password?.trim()) {
+            setError('Username and password are required');
+            return;
+        }
+
         setLoading(true);
-        const minLoadingTime = new Promise(resolve => setTimeout(resolve, 2000));
+        setError('');
+        
         try {
             const response = await fetch(`${urls.API_BASE_URL}/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username, password }),
+                body: JSON.stringify({ 
+                    username: username.trim(), 
+                    password: password.trim() 
+                }),
             });
 
             if (response.ok) {
                 const data = await response.json();
-                localStorage.setItem('authToken', data.token);
-                localStorage.setItem('username', username);
-                await minLoadingTime;
+                
+                if (!data.token) {
+                    setError('Invalid response from server');
+                    return;
+                }
+
+                try {
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('username', username.trim());
+                } catch (storageError) {
+                    console.error('Error saving to localStorage:', storageError);
+                    setError('Failed to save authentication data');
+                    return;
+                }
+
                 const redirectAfterLogin = localStorage.getItem('redirectAfterLogin');
                 if (redirectAfterLogin) {
                     localStorage.removeItem('redirectAfterLogin');
@@ -40,11 +61,18 @@ const LoginPage = () => {
                     router.push('/');
                 }
             } else {
-                const errorData = await response.json();
-                setError(errorData.message || 'Invalid credentials');
+                let errorMessage = 'Invalid credentials';
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.message || errorMessage;
+                } catch (parseError) {
+                    console.error('Error parsing error response:', parseError);
+                }
+                setError(errorMessage);
             }
         } catch (error) {
-            setError('An error occurred. Please try again.');
+            console.error('Login error:', error);
+            setError('Network error. Please check your connection and try again.');
         } finally {
             setLoading(false);
         }
@@ -68,12 +96,10 @@ const LoginPage = () => {
     );
 };
 
-const App = () => (
-    <AppProvider>
+export default function App() {
+    return (
         <Layout>
             <LoginPage />
         </Layout>
-    </AppProvider>
-);
-
-export default App;
+    );
+}
